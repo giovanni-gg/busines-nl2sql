@@ -1,2 +1,4 @@
 openai
 streamlit
+google-cloud-bigquery
+langchain

@@ -1,8 +1,12 @@
 from openai import OpenAI
 import streamlit as st
 import test
+import os
 # from packages.dev_thesis.gbq_utils import GBQUtils
 # from packages.dev_thesis.llm_utils import LLMUtils, FrameworkEval
+
+# path handling
+current_dir = os.path.dirname(__file__)
 
 st.title("ChatGPT-like clone")
 
@@ -19,10 +23,8 @@ st.sidebar.title("Settings")
 st.sidebar.subheader("OpenAI model")
 st.sidebar.write(test.sum(1, 2))
 # open a text file
-import os
 
 # Build an absolute path to the data file
-current_dir = os.path.dirname(__file__)
 data_file_path = os.path.join(current_dir, 'test.txt')
 with open(data_file_path, "r") as file:
     text = file.read()
