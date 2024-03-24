@@ -18,6 +18,13 @@ if "messages" not in st.session_state:
 st.sidebar.title("Settings")
 st.sidebar.subheader("OpenAI model")
 st.sidebar.write(test.sum(1, 2))
+# open a text file
+
+with open("test.txt", "r") as file:
+    text = file.read()
+
+st.sidebar.write(text)
+
 # llm = LLMUtils()
 # gbq = GBQUtils()
 
