@@ -17,7 +17,7 @@ if "messages" not in st.session_state:
 # add a sidebar
 st.sidebar.title("Settings")
 st.sidebar.subheader("OpenAI model")
-test.sum(1, 2)
+st.sidebar.write(test.sum(1, 2))
 # llm = LLMUtils()
 # gbq = GBQUtils()
 
