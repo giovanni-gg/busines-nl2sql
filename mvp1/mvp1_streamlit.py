@@ -19,8 +19,12 @@ st.sidebar.title("Settings")
 st.sidebar.subheader("OpenAI model")
 st.sidebar.write(test.sum(1, 2))
 # open a text file
+import os
 
-with open("/test.txt", "r") as file:
+# Build an absolute path to the data file
+current_dir = os.path.dirname(__file__)
+data_file_path = os.path.join(current_dir, 'test.txt')
+with open(data_file_path, "r") as file:
     text = file.read()
 
 st.sidebar.write(text)
