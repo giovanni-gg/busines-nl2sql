@@ -1,7 +1,7 @@
 from openai import OpenAI
 import streamlit as st
-from packages.dev_thesis.gbq_utils import GBQUtils
-from packages.dev_thesis.llm_utils import LLMUtils, FrameworkEval
+# from packages.dev_thesis.gbq_utils import GBQUtils
+# from packages.dev_thesis.llm_utils import LLMUtils, FrameworkEval
 
 st.title("ChatGPT-like clone")
 
@@ -16,10 +16,10 @@ if "messages" not in st.session_state:
 # add a sidebar
 st.sidebar.title("Settings")
 st.sidebar.subheader("OpenAI model")
-llm = LLMUtils()
-gbq = GBQUtils()
+# llm = LLMUtils()
+# gbq = GBQUtils()
 
-st.sidebar.write(gbq.test_streamlit())
+# st.sidebar.write(gbq.test_streamlit())
 
 for message in st.session_state.messages:
     if message["role"] != "system":
