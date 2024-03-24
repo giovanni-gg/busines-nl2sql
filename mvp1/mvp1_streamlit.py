@@ -20,7 +20,7 @@ st.sidebar.subheader("OpenAI model")
 st.sidebar.write(test.sum(1, 2))
 # open a text file
 
-with open("test.txt", "r") as file:
+with open("/test.txt", "r") as file:
     text = file.read()
 
 st.sidebar.write(text)
