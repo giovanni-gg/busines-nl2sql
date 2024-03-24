@@ -2,6 +2,7 @@ from openai import OpenAI
 import streamlit as st
 import test
 import os
+from utils import LLMUtils, GBQUtils
 # from packages.dev_thesis.gbq_utils import GBQUtils
 # from packages.dev_thesis.llm_utils import LLMUtils, FrameworkEval
 
@@ -11,6 +12,9 @@ current_dir = os.path.dirname(__file__)
 st.title("ChatGPT-like clone")
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+clint_gbq = GBQUtils()
+
+# clint_gbq.get_client()
 
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-3.5-turbo"
