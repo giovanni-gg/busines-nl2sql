@@ -1,5 +1,6 @@
 from openai import OpenAI
 import streamlit as st
+import test
 # from packages.dev_thesis.gbq_utils import GBQUtils
 # from packages.dev_thesis.llm_utils import LLMUtils, FrameworkEval
 
@@ -16,6 +17,7 @@ if "messages" not in st.session_state:
 # add a sidebar
 st.sidebar.title("Settings")
 st.sidebar.subheader("OpenAI model")
+test.sum(1, 2)
 # llm = LLMUtils()
 # gbq = GBQUtils()
 
