@@ -3,3 +3,4 @@ streamlit
 google-cloud-bigquery
 langchain
 langchain-openai
+streamlit_feedback
