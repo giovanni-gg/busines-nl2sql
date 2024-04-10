@@ -1,0 +1,102 @@
+{
+    "table_id": "danish-endurance-analytics.nl2sql.amazon_orders",
+    "table_description": null,
+    "fields": [
+        {
+            "field_name": "order_id",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "405-4493297-6190736,406-8230986-8251513,114-9216074-0433008,407-5071368-8840335,305-7121180-1421956,405-1275043-5217114,171-2584925-0044348,171-9529678-4408356,302-6287076-7059534,407-4172430-6691539,203-1738926-1423507,407-6517808-3697154,206-6058763-8672340,028-8211776-5457917,111-3765394-4665057,026-7578190-4809107,204-1000113-0032324,203-3462205-8232329,026-0099457-3141979,114-7590901-1713805,"
+        },
+        {
+            "field_name": "purchase_date",
+            "field_description": null,
+            "field_dataType": "DATE",
+            "distinct_values": "2024-02-21,2024-02-19,2024-02-13,2023-09-17,2023-12-04,2023-12-03,2023-11-30,2023-11-28,2023-05-30,2023-05-26,2023-05-23,2023-05-14,2023-04-09,2023-04-08,2023-04-04,2023-03-31,2023-03-30,2023-03-23,2023-03-17,2022-12-27,"
+        },
+        {
+            "field_name": "buyer_email",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "k3sjqmfl6jyc9x4@marketplace.amazon.fr,pb8vb8pjgkvpljv@marketplace.amazon.com,jzt6grscx5n7246@marketplace.amazon.de,2vm01ws3pxxwkd3@marketplace.amazon.de,lr3x34cg5jj8x5f@marketplace.amazon.co.uk,21nz0j4pzxkrynw@marketplace.amazon.de,xg0ywqm96p1yx6g@marketplace.amazon.es,qt28302s4w8cr7w@marketplace.amazon.it,hmzmkf5f8tdbrmt@marketplace.amazon.es,1wv9j836yslkf11@marketplace.amazon.fr,1vbk86n1hskhq38@marketplace.amazon.co.uk,chlsyrwxlrngtht@marketplace.amazon.it,5wthls4s6fkb31s@marketplace.amazon.co.uk,s897sqvwl7shn10@marketplace.amazon.es,rdmz03lm8tplf9k@marketplace.amazon.de,5qxhbrk2ndwpv69@marketplace.amazon.de,79qjpbhy4llp32h@marketplace.amazon.es,mkjwwf9hdz36rm1@marketplace.amazon.it,90kddq8w9xqvj76@marketplace.amazon.de,cz1hsk8r4jjqpmf@marketplace.amazon.pl,"
+        },
+        {
+            "field_name": "market",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "Italy,UK,USA,Japan,France,Poland,Canada,Sweden,Mexico,Netherlands,Germany,Spain,Belgium,Turkey,"
+        },
+        {
+            "field_name": "child_asin",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "B09F38XYWQ,B07XYZXYCS,B0BGT4BR51,B09MKMG558,B09LMB9JM2,B0C9F1NCS4,B09MFWPQDP,B09MFXQSM2,B0BGSTHCF1,B0C9DXMR2C,B096M7RR23,B07X2KKLCS,B09L14W8YY,B097BT8F9J,B07N8XLHQS,B0B12PQFJP,B08THJR6ZT,B09JZQZJTH,B0854KBM4Z,B084YX9316,"
+        },
+        {
+            "field_name": "e_conomic_number",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "60019.0,148024.0,176001.0,138024.0,157014.0,123004.0,163001.0,66052.0,130002.0,143023.0,158003.0,104032.0,162012.0,108001.0,122005.0,151001.0,98012.0,84023.0,102053.0,88002.0,"
+        },
+        {
+            "field_name": "product_marketing_category",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "Female Underwear,Sports Socks,Compression Socks,Outdoor Wear,Casual Wear,Male Underwear,Headwear,Fitness Accessories,Hiking Socks,Baselayer,Running Wear,Cycling Wear,Dress Socks,"
+        },
+        {
+            "field_name": "product_name",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "Quarter Sports Socks 5-pack Black 35-38,Men's Merino T-Shirt 1-pack Green L,Women's Windbreaker Jacket 1-pack Black XL,Women's Bamboo Strap Top 2-pack MC (1xBlack, 1xBeige) XS/S,Men's Swim Shorts 1-pack Olive Green M,Towels 1-pack Fuchsia/Purple S,Men's Windbreaker Jacket 1-pack Sea Blue XL,Polar Fleece Recycled Polyester Beanie 1-pack Black One size,Men's Soft Shell Pants 1-pack Green M,Men's Windbreaker Jacket 1-pack Sea Blue L,Men's Athletic Shorts 1-pack Grey  L,Bamboo Soft Top Socks 3-pack White 43-47,Men's Merino Trunks 1-pack Black Melange XL,Men's Merino Tights 1-pack Dark Navy 3XL,Knee-High Bamboo Dress Socks 3-pack MC (Black,Grey,Navy) 43-47,Thermal Heat Socks 2-pack Black 39-42,Women's Organic Cotton Bikini 6-pack MC (2xBlack, 2xLight Blue, 2xGrey M\u00e9lange) M,Polar Fleece Merino Beanie (Kid) 1-pack Blue One Size,Thermal Heat Socks 2-pack Black 43-47,Merino Running Socks 2-pack MC (1xNavy Blue/Turquoise, 1xNavy Blue/Light Blue) 39-42,"
+        },
+        {
+            "field_name": "product_pack",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "2-pack,4-pack,3-pack,5-pack,6-pack,1-pack,"
+        },
+        {
+            "field_name": "product_and_pack",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "Women's Bamboo Strap Top 2-pack,Men's Merino Tights 1-pack,Women's Bamboo Thong 3-pack,Towels 1-pack,Men's Windbreaker Jacket 1-pack,Polar Fleece Recycled Polyester Beanie 1-pack,Knee-High Bamboo Dress Socks 3-pack,Ski Socks 2-pack,Men's Polo Shirt 1-pack,Men's Modal V-Neck T-Shirt 1-pack,Women's Invisible Thong 3-pack,Men's Sustain Sports T-Shirt 1-pack,Women's Half Zip Long Sleeved Shirt 1-pack,Thermal Heat Socks 2-pack,Women's Modal Crew Neck T-Shirt 2-pack,Men's Sustain Sports Tank Top 1-pack,Women's Sustain Fitness Tank Top 1-pack,PB Lace Thong 2-pack,Knee-High Merino Hiking Socks 1-pack,Women's Modal V-Neck T-Shirt 2-pack,"
+        },
+        {
+            "field_name": "product_category",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "Socks,Underwear,Clothing,"
+        },
+        {
+            "field_name": "product_type",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "Women's Athletic Tights,Women's Bamboo Strap Top,Men's Merino Long Sleeved Shirt,Men's Soft Shell Jacket,Polar Fleece Recycled Polyester Beanie,Women's Organic Cotton Bikini,Women's Organic Cotton Bralette,Men's Modal V-Neck T-Shirt,Men's Sustain Sports T-Shirt,Women's Half Zip Long Sleeved Shirt,Women's Modal Crew Neck T-Shirt,Anti-Slip Heat Socks,PB Lace Bikini,Men's Briefs,Men's Classic Trunks,Merino Dress Socks,Hiking Classic Socks,Hiking Premium Socks,Long Distance Running Socks,Men's Sports Trunks Extra long,Women's Bamboo Bralette,Organic Compression Socks,Anti-Friction Race Socks,Men's Merino Tights,Men's Organic Trunks,Women's Merino Tights,Cotton Dress Socks,Ski Socks,Women's Invisible Thong,Men's Classic Trunks w/ Fly,Thermal Heat Socks,Men's Sustain Sports Tank Top,Women's Cycling Shorts,Men's Sustain Short Sleeved Jersey,Men's Half Zip Long Sleeved Shirt,Merino Wool Cycling Socks,Women's Invisible Hipster,Women's Modal V-Neck T-Shirt,Hiking Light Socks,No-Show Bamboo Socks,No-Show Cotton Socks,Women's Bamboo Bikini,Compression Socks (DECS),Men's Compression Shorts,Recycled Polyester Beanie,Men's Compression Long Tights,Women's Merino Long Sleeved Shirt,Men's Merino T-Shirt,Men's Bamboo Trunks w/Fly,Women's Bamboo Thong,Towels,Men's Windbreaker Jacket,Men's Merino Trunks,Merino Wool Liner Socks,Knee-High Bamboo Dress Socks,Men's Athletic Shorts,Bamboo Soft Top Socks,Women's Organic Cotton Thong,Hiking Socks Set,Men's Modal Crew Neck T-Shirt,Men's Cycling Bib Shorts,Men's Cycling Shorts,Men's Merino Halfzip,Women's Organic Cotton Hipster,PB Lace Bra,Women's Merino Baselayer Set,PB Organic Cotton Thong,PB Organic Cotton Bikini,Men's Sports Trunks,Tennis Crew Socks,Merino Neck Gaiter,Men's Bamboo Trunks,Cycling Low-Cut Socks,Cycling Regular Socks,Long Distance Running Crew Socks,Unisex Sustain Baselayer Set (LS Shirt + Tights),Calf Compression Sleeves Old,Men's Organic Woven Boxers,Quarter Sports Socks,Men's Sustain Long Sleeved Jersey,Merino Ridge Beanie,Women's Windbreaker Jacket,Women's Invisible Bikini,Men's Swim Shorts,Men's Soft Shell Pants,Polar Fleece Merino Beanie (Kid),Men's Polo Shirt,Women's Sports Bralette,Merino Running Socks,Women's Sustain Fitness Tank Top,Low-Cut Running Socks,PB Organic Cotton Bra,Men's Sweatshorts,Men's Micro Fleece Jacket,PB Lace Thong,Men's Cycling Bib Pants,Knee-High Merino Hiking Socks,Women's Sustain Fitness T-Shirt,Men's High Pile Fleece Jacket,Anti-Tick Outdoor Socks,Cycling Quarter Socks,Merino Beanie,Bamboo Dress Socks,Hiking Low-Cut Socks,Calf Compression Sleeves,Low-Cut Bamboo Dress Socks,Polar Fleece Merino Beanie (Adult),Long Distance Running Low-Cut Socks,Men's Merino Baselayer Set (LS Shirt + Tights),Knee Sleeve,"
+        },
+        {
+            "field_name": "product_size",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "XL,48-51,Mix,L,XS/S,M,XL/XXL,2XL,M/L,4XL,35-38,One size,S,XS,31-34,3XL,39-42,43-47,One Size,XXS,"
+        },
+        {
+            "field_name": "product_colour",
+            "field_description": null,
+            "field_dataType": "STRING",
+            "distinct_values": "Black,Navy, Black,Purple,MC (1xBlack, 1xBlack/Red, 1xGreen),Black Melange,MC (2xBlack, 2xBlue/Black stripes, 2xBlack/Blue heel and toe),Blue,Jet Black,Red,Pure White,Charcoal Grey,MC (1xBlack, 1xLyon's Blue, 1xBeige),MC (1xBlack, 1xGrey, 1xPink),Off-White,MC (1xBlack, 1xDark Grey, 1xWine),MC (2xBlack Stripe, 1xBlack, 1xNavy, 2xNavy Stripe),MC (1xBlack, 1xBlush, 1xRuby),MC (1xBlue, 1xBrown),MC (2xBlack, 2xWhite, 1xCaribbean Blue),MC (1xBlack, 1xBlue),Light blue,Black/Dark Grey,Grey Melange,Multicolor (1x Dusty Blue, 1x Grey, 1x Light Blue),Fuchsia/Orange,Multicolor (Hiking Classic\n Grey, Light Black, Low-Cut Dark\n Green),Light Grey,White MC (1xGreen/Yellow Stripes, 1xRed/Blue Stripe, 1xWhite),MC (2xApple Red, 2xBlack, 2xNavy),MC (1xBlack, 1xGrey, 1xWhite),MC (1xBlack, 1xBlack/Red, 1xGreen/Purple),MC (1xBlack, 1xBlue, 1xGreen),MC (2xBlack, 1xBlue Mosaic),Camo,MC (1xBlack, 1xDark Green, 1xGrey),MC (1xNavy Blue, 1xRed),MC (1xArmy, 1xBlack, 1xCamouflage),MC (1xBlack, 1xCamouflage, 1xNavy Blue),MC (1xGrey/Black, 1xGrey/Navy Blue, 1xGrey/Bordeaux),MC (2xGreen/Orange, 2xNavy Blue/Bordeaux, 2xRetro Green),MC (2xBlack, 2xBlue M\u00e9lange, 2xGreen),MC (2xBeige, 2xBlack, 2xWhite),Blue/Orange,White/Black,MC (1xBlack, 1xBlue/Neon Yellow, 1xGrey),MC (1xBlack, 1xBlack/Grey),Assorted Blue/Stripes Mix,Assorted Green/Stripes Mix,MC (1xBlack, 1xPink, 1xWhite),Light Blue/Orange,Beige,MC (1xBlack, 1xBeige),MC (1xBlack, 1xGrey, 1xBeige),MC (2xBlack, 2xGrey, 2xPink),Black (Hiking Classic Black, Light Black, Low-Cut Black),Black/Black,MC (2xBlack, 2xWhite, 1xBlue/Orange),Grey M\u00e9lange ,MC (1xBlack, 1xGrey),Pink,Grey (Hiking Classic Grey, Light Grey, Low-Cut Grey),MC (1xBlack, 1xGrey M\u00e9lange, 1xLight Blue),Navy/Peach ,MC (4xBlack, 2xGrey),Black/Pink,MC (Hiking Classic\n Grey, Light Black, Low-Cut Dark\n Green),MC (1xBlack, 1xLight Grey Melange, 1xLight Blue),Multicolor (1x Black, 1x Camouflage), Navy/Blue,White/Red,Light Grey/Pink,MC (1xGrey/White, 1xWhite/Black, 1xRed/Blue Stripe),MC (3xBlack, 3xArgyle Blue),MC (2xGrey, 2xOxford Blue, 2xWine Red),MC (1xNavy/Orange, 1xBlack, 1xNavy),MC (1xNavy/Orange, 1xFuchsia/Orange, 1xNavy),MC (1xNavy Blue, 1xNavy Blue/Light Blue, 1xNavy Blue/Yellow),MC (3xBlack, 1xBlue, 1xBlack/Red, 1xGreen/Purple),MC (1xGreen, 1xGrey, 1xNavy Blue),MC (1xMoss Green, 1xGrey Mele/Grey),MC (1xBlack/Grey, 1xDark Green),MC (1xBlue/Red, 1xLogo Blue, 1xLogo Red),MC (2xNavy Blue/Bordeaux, 2xGreen/Orange, 2xBordeaux/Navy Blue) ,MC (1xBlack, 1xBlue, 1xWhite),MC (1xBlack, 1xNavy, 1xWhite/Stripes),Caribbean Blue,MC (1xBlack, 1xGrey Camo),MC (1xBlack/Grey, 1xBlue/Yellow, 1xGrey/Black),Grey Camo,Black/Blue,Multicolor (1x Black, 1x Blue, 1x White/Stripes),Assorted Blue/Red Mix,Neon Yellow,White,Fuchsia/Purple,Sea Blue,Grey,Silver Grey,Navy Blue,Dark Navy,MC (1xBlue/Yellow, 1xDark Grey),Bright Blue,Wine Red,MC (1xBlue/Yellow,1x Dark Grey),MC (1xBlack, 1xOrange),MC (2xBlack/Black, 2xBlack/Bordeaux, 2xBlack/Grey),Black/Big Logo,MC (2xBlack, 2xGrey, 2xNavy Blue),MC (1xBlack/Grey, 1xGrey/Green),MC (2xBlack, 2xGrey, 1xWhite),Green Melange,Ruby,Sea Foam Green,Multicolor (1x Raspberry Pink, 1x Black, 1x Grey),MC (4xBlack, 2xDark Grey),Lyon's Blue,Blue M\u00e9lange,Dusty Blue,Dark Grey/Light Grey,Blue/Neon Yellow,MC (2xBlack, 2xWhite/Red, 1xBlack/Red, 1xGrey),MC (1xBlack/White, 1xWhite, 1xWhite/Black),MC (1xDark Green, 1xLight Green, 1xMedium Green),MC (3xBlack, 3xArgyle Green),Yellow/Flint Grey,MC (1xGreen, 1xDark Grey, 1xYellow),MC (1xLight Grey, 1xDark Grey, 1xBlack),Black MC (1x Black, 1x Grey Dots, 1x Grey Stripes),MC (3xBlack, 3xBlack/Red Seams),MC (1xGrey, 1xNavy Blue),MC (1xGreen/Orange, 1xNavy Blue/Bordeaux, 1xRetro),MC (1xBlack, 1xGrey, 1xNavy Blue),MC (3xBlack, 1xGreen/Orange, 1xNavy Blue/Bordeaux, 1xRetro),MC (Black Stripe, Navy Stripe, Black),MC (Black, Pink, White),Grey/Black,Grey/Red,Assorted Blue/Grey Mix,Green,Olive Green,Dark Grey,MC (Black,Grey,Navy),Grey ,Grey M\u00e9lange,MC (3xBlack, 1xGreen/Orange, 1xNavy Blue/Bordeaux, 1xRetro) ,MC (2xBlack, 2xLight Blue, 2xGrey M\u00e9lange),MC (1xNavy Blue/Turquoise, 1xNavy Blue/Light Blue),Wine,Black/Grey,MC (1xBlack, 2xPink, 2xRuby),Multicolor (1x White, 1x Sea Foam Green),MC (1xBlue/Orange, 1xNavy/Light Blue),Dark Grey Melange,MC (2xBlack, 2xDark Grey, 2xWine),Dark Green,Raspberry Pink,Light Green,Orange,Dark Grey/Green,MC (2xBlack, 2xGrey, 2xWhite/Red),White MC (1xBlack Stripes, 1xGreen/Yellow Stripes, 1xRed/Blue Stripes),Grey/White,MC (3xNavy, 3xArgyle Red),MC (1xBlack, 1xDark Grey, 1xNavy),MC (2xBlack, 2xGrey, 2xWhite),MC (2xBlack, 2xRed, 2xNavy Blue) ,MC (2xBlack, 1xBlue Camouflage),MC (3xBlack, 1xBlue, 1xBlue Camouflage, 1xBlue Mosaic),MC (2xBlack, 2xBlue, 2xGreen),Forest Green,Yellow,Oak Brown,MC (1xGreen, 1xOak Brown, 1xRed),Green/Grey,MC (1xWhite, 2xWhite/Black),MC (1xBlack, 1XDark Grey, 1xBeige),MC (1xBlack, 1xWhite),Grey/Orange,Mustard,Light Blue,MC (2xBlack, 1xGrey/Black),MC (1xBlack, 1xGrey, 1xNavy) ,"
+        },
+        {
+            "field_name": "gross_sales",
+            "field_description": null,
+            "field_dataType": "FLOAT",
+            "distinct_values": "34.95,23.15,19.59972082385862,21.29,25.69162558347496,35.77214454943017,25.16,22.95,58.34939547923602,22.811716927330856,6.5,44.95,35.04973668812171,23.95,21.95,27.398555579515193,28.87898605243359,17.950000000000003,22.816947833324797,30.95,"
+        },
+        {
+            "field_name": "units_sold",
+            "field_description": null,
+            "field_dataType": "INTEGER",
+            "distinct_values": "2,7,13,11,9,30,19,100,0,6,10,15,25,111,31,27,24,55,18,32,"
+        }
+    ]
+}

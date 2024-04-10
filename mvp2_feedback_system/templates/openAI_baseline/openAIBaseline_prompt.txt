@@ -1,0 +1,6 @@
+### Generate sqlite SQL query only and with no explanation
+### SQLite SQL tables , with their properties:
+#
+# {table_schema}
+#
+### {user_question}

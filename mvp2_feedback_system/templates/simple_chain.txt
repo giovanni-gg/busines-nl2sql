@@ -1,0 +1,8 @@
+### Answer the question by Google Big Query (GBQ) SQL query only and with no explanation. You must minimize SQL execution time while ensuring correctness.
+
+### SQL table, with their properties:
+{table_schema}
+
+
+### Question: {user_question}
+### SQL: 

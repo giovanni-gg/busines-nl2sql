@@ -107,19 +107,17 @@ class LLMTabular2NL(LLMUtils):
         pass
 
     def invoke_tabular2sql_chain(self, user_question: str, tabular_response: str):
-        print("Invoking Answerability Chain")
+        print("Invoking Tabular 2 sql Chain")
         
-        sys_message = self.load_template_from_file(current_dir + os.sep + 'data' + os.sep + 'de_data' + os.sep + 'prompt_template' + os.sep + 'tabular2sql_sysMessage.txt')
+        sys_message = self.load_template_from_file(os.path.join(current_dir, 'templates/tabular2nl/tabular2sql_sysMessage.txt')) # Load the sys message
 
-        prompt_template = self.load_template_from_file(os.path.join(current_dir, 'data/de_data/prompt_template/tabular2SQL_promptTemplate.txt'))
+        prompt_template = self.load_template_from_file(os.path.join(current_dir, 'templates/tabular2nl/tabular2SQL_promptTemplate.txt'))
 
         # Messages
         messages=[
             {"role": "system", "content": sys_message},
             {"role": "user", "content": Format.get_prompt_tabular2sql(user_question=user_question, prompt_template = prompt_template, tabular_response=tabular_response)},
         ]
-
-        print(messages)
 
         # API call
         response = self.client.chat.completions.create(
@@ -128,9 +126,12 @@ class LLMTabular2NL(LLMUtils):
             messages=messages
         )
 
+        print(messages)
+
         response = response.choices[0].message.content
 
         # formatted_response['user_question'] = user_question
+        print(response)
 
         return response
     
