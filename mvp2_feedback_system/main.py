@@ -44,6 +44,9 @@ def analyze_response(response, prompt):
     else: # RUN SQL QUERY ON DATABASE
         with st.spinner('Getting real-time data from Database...'):
             query_result = gbq.run_query(formatted_response.get('sql_query'))
+        
+        if "error" in query_result and not isinstance(query_result, RowIterator):
+            return "SYNTAX ERROR: {}".format(query_result)
 
         if isinstance(query_result, RowIterator):
             if (query_result.total_rows) > 500:
