@@ -56,10 +56,7 @@ memory = lc_memory.ConversationBufferMemory(
 )
 with st.sidebar:
     st.markdown('## Technical Validation Testing')
-    if st.button("Clear message history"):
-        print("Clearing message history")
-        memory.clear()
-        st.session_state.display_messages = []
+    st.markdown("Reload page to clear the chat history")
     st.divider()
 
     st.success('Please, leave a feedback after the response')
