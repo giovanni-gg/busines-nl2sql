@@ -222,6 +222,46 @@ class Format:
             return csv_string
         else:
             return "No data returned."
+    @staticmethod
+    def save_dict_to_string(dict):
+        '''
+            Save a dictionary to a string
+        '''
+        return json.dumps(dict)
+    
+    def save_row_iterator_to_csv_string_new(iterator):
+        """
+        Saves the rows returned by a BigQuery query job to a CSV string.
+        
+        Parameters:
+        - iterator: The RowIterator object from BigQuery.
+        """
+
+        if not isinstance(iterator, RowIterator):
+            return "No data returned."
+
+        # Capture schema from the RowIterator before reading data
+        schema = iterator.schema
+
+        # Store data in a list to prevent multiple iterations over the iterator
+        data = list(iterator)
+
+        # Create a StringIO object to hold the CSV data
+        output = StringIO()
+        writer = csv.writer(output)
+
+        # Write header using the schema from the RowIterator
+        writer.writerow([field.name for field in schema])
+
+        # Write data rows
+        for row in data:
+            writer.writerow(row.values())
+
+        # Get the CSV string from the StringIO object
+        csv_string = output.getvalue()
+        output.close()  # Close the StringIO object to free up resources
+
+        return csv_string
 
         
     
@@ -391,12 +431,14 @@ class GBQUtils:
 
         return distinct_values
     
-    def run_query(self, query):
+    @st.cache_data(ttl=600)
+    def run_query(_self, query):
         try:
-            query_job = self.client.query(query)
+            query_job = _self.client.query(query)
             results = query_job.result()
             print(f"Query executed successfully. {results.total_rows} rows returned.")
-            return results
+            rows = [dict(row) for row in results] 
+            return rows
         except BadRequest as error:
             # BadRequest errors provide more detailed information about query issues
             # Attempting to parse error details for more specific feedback
@@ -411,9 +453,6 @@ class GBQUtils:
             return f"A Google Cloud error occurred: {error}"
         except Exception as e:
             return f"An unexpected error occurred: {e}"
-    
-    def test_streamlit(self):
-        return "Streamlit is working"
     
 
 

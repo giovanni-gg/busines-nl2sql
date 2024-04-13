@@ -44,24 +44,25 @@ def analyze_response(response, prompt):
     else: # RUN SQL QUERY ON DATABASE
         with st.spinner('Getting real-time data from Database...'):
             query_result = gbq.run_query(formatted_response.get('sql_query'))
+            st.sidebar.write(query_result)
         
-        if "error" in query_result and not isinstance(query_result, RowIterator):
+        if "error" in query_result:
             return "SYNTAX ERROR: {}".format(query_result)
-
-        if isinstance(query_result, RowIterator):
-            if (query_result.total_rows) > 500:
+        
+        else: # didnt produce an error
+            if len(query_result) > 500:
                 return "The query result is too large to be displayed. Please, try another question."
             else:
-                query_results_csv = Format.save_row_iterator_to_csv_string(query_result)
-                
+                query_results_csv = Format.save_dict_to_string(query_result)
+                st.sidebar.write(query_results_csv)
+                print(query_results_csv)
+
                 # Parse Tabular Response to NL and return it
                 llm_tabular = LLMTabular2NL()
                 with st.spinner('Generating Natural Language Response...'):
                     nl_response = llm_tabular.invoke_tabular2sql_chain(user_question=prompt, tabular_response=query_results_csv)
 
                 return nl_response
-        else:
-            return "We couldn't process your question. Please, try to be more specific in your prompt"
         
 
 client = Client()
