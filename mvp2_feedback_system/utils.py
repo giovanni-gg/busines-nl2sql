@@ -9,7 +9,7 @@ from langchain.prompts import PromptTemplate
 from pathlib import Path
 import os
 import csv
-from datetime import datetime
+from datetime import datetime, date
 import json
 from io import StringIO
 
@@ -222,12 +222,20 @@ class Format:
             return csv_string
         else:
             return "No data returned."
+    @staticmethod 
+    def custom_serializer(obj):
+        if isinstance(obj, date):
+            return obj.isoformat()
+        elif isinstance(obj, datetime):
+            return obj.isoformat()  # or format it as obj.strftime('%Y-%m-%dT%H:%M:%S')
+        raise TypeError(f"Type {type(obj)} not serializable")
+
     @staticmethod
     def save_dict_to_string(dict):
         '''
             Save a dictionary to a string
         '''
-        return json.dumps(dict)
+        return json.dumps(dict, default=Format.custom_serializer)
     
     def save_row_iterator_to_csv_string_new(iterator):
         """
