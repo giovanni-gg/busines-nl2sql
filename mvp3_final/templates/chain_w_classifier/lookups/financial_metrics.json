@@ -1,0 +1,32 @@
+{
+    "units": {
+        "description": "Whenver the user asks for units sold",
+        "calculation_guidelines": "Use the column 'units' to perform the calculation",
+        "calculation_example": null
+    },
+    "sales": {
+        "description": "Any metrics related to sales, including 'sales', 'revenue', 'net sales', 'top sales'.",
+        "calculation_guidelines": "Use the column gross_sales to perform the calculation",
+        "calculation_example": null
+    },
+    "no_orders": {
+        "description": "Number of Orders",
+        "calculation_guidelines": "Use COUNT(distinct order_id) in order to get the proper number of order.",
+        "calculation_example": null
+    },
+    "no_customers": {
+        "description": "Number of Customers",
+        "calculation_guidelines": "Use COUNT(distinct buyer_email) in order to get the proper number of customers.",
+        "calculation_example": null
+    },
+    "basket_size": {
+        "description": "The average number of items per order.",
+        "calculation_guidelines": "- Use COUNT(asin) / COUNT(DISTINCT order_id) to calculate the average number of items per order",
+        "calculation_example": null
+    },
+    "basket_value": {
+        "description": "Refers to the total amount of money a customer is expected to spend on a single shopping sessio",
+        "calculation_guidelines": "- Use SUM(gross_sales) / COUNT(DISTINCT order_id) to calculate the basket value",
+        "calculation_example": null
+    }
+}
