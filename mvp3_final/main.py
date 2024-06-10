@@ -16,6 +16,9 @@ import hmac
 import json
 import pandas as pd
 import numpy as np
+import os
+
+current_dir = os.path.dirname(__file__)
 
 
 def check_password():
@@ -126,7 +129,7 @@ with st.sidebar:
     #             ''')
 
 # Add a button to choose between llmchain and expression chain
-_DEFAULT_SYSTEM_PROMPT = llm.load_template_from_file("templates/chain_w_classifier/prompt/tf-sql_sysmessage.txt")
+_DEFAULT_SYSTEM_PROMPT = llm.load_template_from_file(os.path.join(current_dir,"templates/chain_w_classifier/prompt/tf-sql_sysmessage.txt" ))
 system_prompt = _DEFAULT_SYSTEM_PROMPT
 system_prompt = system_prompt.strip().replace("{", "{{").replace("}", "}}")
 
