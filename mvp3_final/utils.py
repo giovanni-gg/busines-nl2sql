@@ -42,7 +42,7 @@ def get_lookups():
         field_name = field['field_name']
         # Map each distinct value to the field_name
         for value in field['distinct_values']:
-            SCHEMA_LINKING_LOOKUP[value] = field_name
+            SCHEMA_LINKING_LOOKUP[value.lower()] = field_name.lower()
 
     with open(os.path.join(current_dir, 'templates/chain_w_classifier/lookups/growth_metrics.json'), 'r') as f:
         GROWTH_METRICS_LOOKUP = json.load(f)
@@ -232,6 +232,8 @@ class LLMQueryClassification(LLMUtils):
             results = []
             for item in items:
                 # print(item)
+                if lookup == SCHEMA_LINKING_LOOKUP:
+                    item = item.lower()
                 if item in lookup:
                     item_details = lookup[item]
                     if lookup == SCHEMA_LINKING_LOOKUP:

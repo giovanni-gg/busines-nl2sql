@@ -4,6 +4,8 @@ st.set_page_config(
     page_title="DE's Amazon Sales Specialist ",
     page_icon="🦜️️🛠️",
 )
+st.subheader('''🚵‍♂️🔢 Danish Endurance's GPT''')
+
 
 from langchain.callbacks.manager import collect_runs
 from langchain import memory as lc_memory
@@ -94,8 +96,6 @@ if 'display_messages' not in st.session_state:
 if 'memory_messages_classifier' not in st.session_state:
     st.session_state.memory_messages_classifier = []
 
-
-st.subheader('''🚵‍♂️🔢 Danish Endurance's GPT''')
 memory = lc_memory.ConversationBufferMemory(
     chat_memory=lc_memory.StreamlitChatMessageHistory(key="langchain_messages"),
     return_messages=True,
