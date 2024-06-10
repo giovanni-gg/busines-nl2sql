@@ -65,7 +65,7 @@ def analyze_response(response, prompt):
     else: # RUN SQL QUERY ON DATABASE
         with st.spinner('Getting real-time data from Database...'):
             query_result = gbq.run_query(formatted_response.get('sql_query'))
-            st.sidebar.write(query_result)
+            # st.sidebar.write(query_result)
         
         if "error" in query_result:
             return "SYNTAX ERROR: {}".format(query_result)
@@ -75,7 +75,7 @@ def analyze_response(response, prompt):
                 return "", query_result
             else:
                 query_results_csv = Format.save_dict_to_string(query_result)
-                st.sidebar.write(query_results_csv)
+                # st.sidebar.write(query_results_csv)
                 print(query_results_csv)
 
                 # Parse Tabular Response to NL and return it
@@ -167,15 +167,15 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
         
         formatted_reasons = streamlit_utils.format_reasons(reasons_found, reasons_not_found, answerable)
         
-        with st.sidebar:
-            st.markdown('## Query Classification')
-            st.markdown(f'### Is the question answerable? {answerable}')
-            st.markdown(f'### Reasons: {reasons_found}')
-            st.markdown(f'### Reasons nto found: {reasons_not_found}')
-            st.markdown('### Classification Results:')
-            st.markdown(f'### classifierguidelines: {classifier_guidelines}')
-            st.json(json.dumps(question_classfied))
-            st.divider()
+        # with st.sidebar:
+        #     st.markdown('## Query Classification')
+        #     st.markdown(f'### Is the question answerable? {answerable}')
+        #     st.markdown(f'### Reasons: {reasons_found}')
+        #     st.markdown(f'### Reasons nto found: {reasons_not_found}')
+        #     st.markdown('### Classification Results:')
+        #     st.markdown(f'### classifierguidelines: {classifier_guidelines}')
+        #     st.json(json.dumps(question_classfied))
+        #     st.divider()
 
         if answerable:
 
@@ -188,8 +188,8 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             with collect_runs() as cb:
                 with st.spinner("Processing Your Question") as status:
                     generated_query = chain.invoke(input_dict, config={"tags": ["Streamlit Chat"]}).content
-                    st.session_state.display_messages[-1]['content'] += generated_query
-                    st.markdown(generated_query)
+                    # st.session_state.display_messages[-1]['content'] += generated_query
+                    # st.markdown(generated_query)
                 st.session_state.run_id = cb.traced_runs[0].id
             
             nl_response, query_result_dict = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
