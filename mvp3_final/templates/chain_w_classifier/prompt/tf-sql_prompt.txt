@@ -1,0 +1,9 @@
+Generate SQL query using Google Big Query Syntax only and with no explanation. Pay attention on the intructions below.
+
+## Instructions ##
+{classifier_guidelines}
+## End of Instructions ##
+
+Question: {input}
+
+Think step by step, be very attentive when interpreting the Dates. 

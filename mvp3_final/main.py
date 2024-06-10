@@ -1,12 +1,22 @@
 import streamlit as st
+
+st.set_page_config(
+    page_title="DE's Amazon Sales Specialist ",
+    page_icon="🦜️️🛠️",
+)
+
 from langchain.callbacks.manager import collect_runs
 from langchain import memory as lc_memory
 from langsmith import Client
 from streamlit_feedback import streamlit_feedback
 from expression_chain import get_expression_chain
-from utils import LLMUtils, GBQUtils, MetadataLoader, Format, LLMTabular2NL, get_lookups
+from utils import LLMUtils, GBQUtils, MetadataLoader, Format, LLMTabular2NL, get_lookups, Streamlit
 from google.cloud.bigquery.table import RowIterator
 import hmac
+import json
+import pandas as pd
+import numpy as np
+
 
 def check_password():
     """Returns `True` if the user had the correct password."""
@@ -35,6 +45,14 @@ def check_password():
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
+client = Client()
+gbq = GBQUtils()
+llm = LLMUtils()
+streamlit_utils = Streamlit()
+llm_tabular = LLMTabular2NL()
+
+
+SCHEMA_LINKING_LOOKUP, GROWTH_METRICS_LOOKUP, FINANCIAL_METRICS_LOOKUP, DATERANGE_METRICS_LOOKUP = get_lookups()
 
 def analyze_response(response, prompt):
     formatted_response = Format.format_llm_response(response, prompt) # format to extract SQL query
@@ -50,31 +68,19 @@ def analyze_response(response, prompt):
             return "SYNTAX ERROR: {}".format(query_result)
         
         else: # didnt produce an error
-            if len(query_result) > 500:
-                return "The query result is too large to be displayed. Please, try another question."
+            if len(query_result) > 50:
+                return "", query_result
             else:
                 query_results_csv = Format.save_dict_to_string(query_result)
                 st.sidebar.write(query_results_csv)
                 print(query_results_csv)
 
                 # Parse Tabular Response to NL and return it
-                llm_tabular = LLMTabular2NL()
                 with st.spinner('Generating Natural Language Response...'):
                     nl_response = llm_tabular.invoke_tabular2sql_chain(user_question=prompt, tabular_response=query_results_csv)
 
-                return nl_response
+                return nl_response, query_result
         
-
-client = Client()
-gbq = GBQUtils()
-
-
-st.set_page_config(
-    page_title="DE's Amazon Sales Specialist ",
-    page_icon="🦜️️🛠️",
-)
-
-SCHEMA_LINKING_LOOKUP, GROWTH_METRICS_LOOKUP, FINANCIAL_METRICS_LOOKUP, DATERANGE_METRICS_LOOKUP = get_lookups()
 
 # set of llm_messages that will be displayed, to the user - hiding prompt engineering. 
 if 'display_messages' not in st.session_state:
@@ -93,46 +99,34 @@ with st.sidebar:
     st.markdown("Reload page to clear the chat history")
     st.divider()
 
-    st.success('Please, leave a feedback after the response')
-    st.markdown('''### Easy Copy-Paste Feedback''')
-    st.markdown('''#### Use the following feedback options:''')
-    st.code('syntax_error')
-    st.markdown('''*failed to execute query*''')
-    st.code('column_mapping')
-    st.markdown('''*maps to wrong column e.g Baselayer -> product_name*''')
-    st.code('question_misinterpretation')
-    st.markdown('''*e.g "ask  for last month" but gets last 30 days*''')
-    st.code('context_misinterpretation')
-    st.markdown('''*e.g "ask  for n orders" but gets number of lines*''')
-    st.code('faulty_logic')
-    st.markdown('''*wrong calculations - e.g YoY, Sum Basket Value*''')
-    st.divider()
-    st.markdown('''
-                ## What Feedback I'm looking for?
-                ### Model Accuracy
-                - Is the generated SQL query correct?
-                - Did the model correctly capture the intent of the question? (Reflect on the quality of the prompt)
+    # st.success('Please, leave a feedback after the response')
+    # st.markdown('''### Easy Copy-Paste Feedback''')
+    # st.markdown('''#### Use the following feedback options:''')
+    # st.code('syntax_error')
+    # st.markdown('''*failed to execute query*''')
+    # st.code('column_mapping')
+    # st.markdown('''*maps to wrong column e.g Baselayer -> product_name*''')
+    # st.code('question_misinterpretation')
+    # st.markdown('''*e.g "ask  for last month" but gets last 30 days*''')
+    # st.code('context_misinterpretation')
+    # st.markdown('''*e.g "ask  for n orders" but gets number of lines*''')
+    # st.code('faulty_logic')
+    # st.markdown('''*wrong calculations - e.g YoY, Sum Basket Value*''')
+    # st.divider()
+    # st.markdown('''
+    #             ## What Feedback I'm looking for?
+    #             ### Model Accuracy
+    #             - Is the generated SQL query correct?
+    #             - Did the model correctly capture the intent of the question? (Reflect on the quality of the prompt)
 
-                ### UX/UI
-                *Fundamently, this task is also an UX/UI design problem*
-                - Is the generated answer well formatted?
-                - Do you think the model could provide additional information to the user in order to the user understand and pottentially improve the prompt?
-                
-                ''')
+    #             ### UX/UI
+    #             *Fundamently, this task is also an UX/UI design problem*
+    #             - Is the generated answer well formatted?
+    #             - Do you think the model could provide additional information to the user in order to the user understand and pottentially improve the prompt?
+    #             ''')
 
 # Add a button to choose between llmchain and expression chain
-_DEFAULT_SYSTEM_PROMPT = (
-'''
-You are an experienced SQL Developer, who is capable of tranlasting natural language into SQL code in Google Big Query Syntax. You job is to understand the Table Schema and user questions and produce a robust SQL query.
-
-Here's the table schema for Amazon Orders (danish-endurance-analytics.nl2sql.amazon_orders):
-danish-endurance-analytics.nl2sql.amazon_orders('order_id', 'purchase_date', 'buyer_email', 'market', 'child_asin', 'e_conomic_number', 'product_marketing_category', 'product_name', 'product_pack', 'product_and_pack', 'product_category', 'product_type', 'product_size', 'product_colour', 'gross_sales', 'units_sold')
-
-Guidelines:
-- If the questions is not a business question directly related to the table schema, please simply return to the user "Your question didn't produce any results. Please, try another question."
-- When generating the SQL query, you must return the SQL query only, without explanation. If the user requires an explanation, they can ask for it.
-'''
-)
+_DEFAULT_SYSTEM_PROMPT = llm.load_template_from_file("templates/chain_w_classifier/prompt/tf-sql_sysmessage.txt")
 system_prompt = _DEFAULT_SYSTEM_PROMPT
 system_prompt = system_prompt.strip().replace("{", "{{").replace("}", "}}")
 
@@ -145,18 +139,13 @@ feedback_option = (
    "thumbs"
 )
 
-# for msg in st.session_state.langchain_messages:
-#     avatar = "🦜" if msg.type == "ai" else None
-#     st.sidebar.write(msg.type, msg.content)
-#     with st.chat_message(msg.type, avatar=avatar):
-#         st.markdown(msg.content)
-
 for message in st.session_state.display_messages:
     if message["role"] == "assistant":
         avatar = "🤖"
     else:
         avatar = "🚵‍♂️"
     with st.chat_message(message["role"], avatar=avatar):
+        streamlit_utils.get_status_elements(message["content"])
         st.markdown(message["content"])
 
 
@@ -164,28 +153,59 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
     st.session_state.display_messages.append({"role": "user", "content": prompt})
     st.chat_message("user", avatar='🚵‍♂️').write(prompt)
 
+    # create display message for assistant
+    st.session_state.display_messages.append({"role": "assistant", "content": ""})
+
     with st.chat_message("assistant", avatar = "🤖"):
-        message_placeholder = st.empty()
-        full_response = ""
-        # Define the basic input structure for the chains
-        input_dict = {"input": prompt}
+        saved_context_response = ""
 
-        with collect_runs() as cb:
-            # for chunk in chain.stream(input_dict, config={"tags": ["Streamlit Chat"]}):
-            #     full_response += chunk.content
-            #     message_placeholder.markdown(full_response + "▌")
-            with st.spinner("Processing Your Question") as status:
-                full_response = chain.invoke(input_dict, config={"tags": ["Streamlit Chat"]}).content
-            st.session_state.run_id = cb.traced_runs[0].id
+        with st.spinner("Classifying Your Question..."):
+            answerable, reasons_found, reasons_not_found, classifier_guidelines, question_classfied = llm.invoke_openAI_w_classifier_vanilla(prompt)
         
-        query_results_csv = analyze_response(full_response, prompt) # analyze the response to check if the produced a SQL Query or not
-                
-        # st.markdown(query_results_csv)
-        full_response += f"\n{query_results_csv}"
-        memory.save_context(input_dict, {"output": full_response})
-        message_placeholder.markdown(full_response)
-        st.session_state.display_messages.append({"role": "assistant", "content": full_response})
+        formatted_reasons = streamlit_utils.format_reasons(reasons_found, reasons_not_found, answerable)
+        
+        with st.sidebar:
+            st.markdown('## Query Classification')
+            st.markdown(f'### Is the question answerable? {answerable}')
+            st.markdown(f'### Reasons: {reasons_found}')
+            st.markdown(f'### Reasons nto found: {reasons_not_found}')
+            st.markdown('### Classification Results:')
+            st.markdown(f'### classifierguidelines: {classifier_guidelines}')
+            st.json(json.dumps(question_classfied))
+            st.divider()
 
+        if answerable:
+
+            st.info('Please, check if we correctly captured your question intent', icon="ℹ️")
+
+            st.session_state.display_messages[-1]['content'] += formatted_reasons
+            st.markdown(formatted_reasons) # display reason as soon as it's generated before the query is processed
+            # Define the basic input structure for the chains
+            input_dict = [{"input": prompt}, {'classifier_guidelines': classifier_guidelines}]
+            with collect_runs() as cb:
+                with st.spinner("Processing Your Question") as status:
+                    generated_query = chain.invoke(input_dict, config={"tags": ["Streamlit Chat"]}).content
+                    st.session_state.display_messages[-1]['content'] += generated_query
+                    st.markdown(generated_query)
+                st.session_state.run_id = cb.traced_runs[0].id
+            
+            nl_response, query_result_dict = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
+            
+            # LLM context
+            saved_context_response += f"\n{nl_response}"
+            memory.save_context(input_dict[0], {"output": saved_context_response})
+            
+            # Display nl response
+            st.session_state.display_messages[-1]['content'] += nl_response
+            st.markdown(nl_response)
+            
+            st.dataframe(pd.DataFrame(query_result_dict))
+            st.session_state.display_messages.append({"role": "assistant", "content": saved_context_response})
+        else:
+            # st.warning("Our systems couldn't answer your question. Please modify it:", icon="⚠️")
+            streamlit_utils.get_status_elements(formatted_reasons)
+            st.markdown(formatted_reasons)
+            st.session_state.display_messages.append({"role": "assistant", "content": "I'm sorry, I can't answer this question. Please, ask another question."})
 
 if st.session_state.get("run_id"):
     run_id = st.session_state.run_id

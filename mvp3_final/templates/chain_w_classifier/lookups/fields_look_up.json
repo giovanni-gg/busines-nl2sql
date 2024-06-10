@@ -24,6 +24,47 @@
             ]
         },
         {
+            "field_name": "product_marketing_category",
+            "distinct_values":["product_marketing_category"]
+        },
+        {
+            "field_name": "product_type",
+            "distinct_values":["product_type"]
+        },
+        {
+            "field_name": "product_colour",
+            "distinct_values":["product_colour"]
+        },
+        {
+            "field_name": "product_category",
+            "distinct_values":["product_category"]
+        },
+        {
+            "field_name": "product_pack",
+            "distinct_values":["product_pack"]
+        },
+        {
+            "field_name": "product_size",
+            "distinct_values":["product_size"]
+        },
+        {
+            "field_name": "product_colour",
+            "distinct_values":["product_colour"]
+        },
+        {
+            "field_name": "product_name",
+            "distinct_values":["product_name"]
+        },
+        {
+            "field_name": "product_and_pack",
+            "distinct_values":["product_and_pack"]
+        },
+        {
+            "field_name": "child_asin",
+            "distinct_values":["child_asin"]
+        },
+
+        {
             "field_name": "child_asin",
             "field_description": "The unique identifier for the specific product variant purchased; can be used interchangeably with economic number",
             "field_dataType": "STRING",

@@ -103,6 +103,40 @@ class LLMUtils:
 
         return formatted_response
 
+    def invoke_openAI_w_classifier_vanilla(self, question: str, model = 'gpt-4-turbo'):
+        '''
+        Invoke openai vanilla chain with classfiier
+        - Classify the question
+        - Format the Prompt and pass it into the normal flow of the openAI chain
+        '''
+        ## Classify the question ##
+        llm_classifier = LLMQueryClassification()
+        question_classfied = llm_classifier.invoke_query_classification_chain(user_question=question, model=model)
+
+        # process the classification
+        classification_results = llm_classifier.process_classification(question_classfied)
+
+        # define if it's anserable
+        answerable, reasons_found, reasons_not_found = llm_classifier.decide_if_question_is_answerable(classification_results)
+         
+        if answerable:
+            classifier_guidelines = Format.get_classification_guidelines(classification_results)
+        
+        else:
+            classifier_guidelines = f"Question is not answerable due to the following reasons: {reasons_not_found}"
+
+        return answerable, reasons_found, reasons_not_found, classifier_guidelines, question_classfied
+
+        #     ## Run the openAI chain
+        #     sys_message = self.load_template_from_file(os.path.join(current_dir, 'data/de_data/prompt_template/6_TF-SQL/tf-sql_sysmessage.txt'))
+
+        #     prompt_template = self.load_template_from_file(os.path.join(current_dir, 'data/de_data/prompt_template/6_TF-SQL/tf-sql_prompt.txt'))
+
+        #     final_prompt = Format.get_prompt_simple_with_classifier(user_question = user_question, prompt_template = prompt_template, classifier_guidelines=classifier_guidelines)
+
+
+        return formatted_response, response
+
     def load_template_from_file(self, file_path):
         with open(file_path, 'r') as file:
             template_str = file.read()
@@ -151,11 +185,11 @@ class LLMQueryClassification(LLMUtils):
     def invoke_query_classification_chain(self, user_question, model = 'gpt-4-turbo'):
         print("##Invoking Query Classification Chain##")
 
-        sys_message_template = self.load_template_from_file(os.path.join(current_dir, 'data/de_data/prompt_template/5_query_classifier/qc_dynamic_system_message.txt'))
+        sys_message_template = self.load_template_from_file(os.path.join(current_dir, 'templates/chain_w_classifier/prompt/qc_dynamic_system_message.txt'))
 
-        prompt_template = self.load_template_from_file(os.path.join(current_dir, 'data/de_data/prompt_template/5_query_classifier/qc_prompt_template.txt'))
+        prompt_template = self.load_template_from_file(os.path.join(current_dir, 'templates/chain_w_classifier/prompt/qc_prompt_template.txt'))
 
-        user_question = user_question['question']
+        user_question = user_question
 
         sys_message = Format.get_sysmessage_classification(prompt_template=sys_message_template)
 
@@ -176,20 +210,6 @@ class LLMQueryClassification(LLMUtils):
             messages=messages,
             response_format={ "type": "json_object" }
         )
-
-        # formatted response to be logged
-        formatted_response = {
-            "user_question": user_question,
-            "prompt": prompt,
-            "sys_message": sys_message,
-            "id": response.id,
-            "created_at": response.created,
-            "classification": json.loads(response.choices[0].message.content),
-            "model": model
-        }
-
-        FrameworkEval.log_response_classifier(formatted_response)
-
 
         return json.loads(response.choices[0].message.content)
 
@@ -247,48 +267,170 @@ class LLMQueryClassification(LLMUtils):
 
     def decide_if_question_is_answerable(self, classification: dict):
         '''
-        Decide if the question is answerable based on the classification
+        Decide if the question is answerable based on the classification.
 
         - Returns false if the question contains the following:
             - Not Found Products;
             - Not Found Financial Metrics;
             - Not Found Growth Metrics;
             - Not Found Date Range Metrics;
-            - Any Metric on the not allowed key;
+            - Any Metric on the not allowed key.
+        - Returns both FOUND and NOT FOUND metrics in a structured format.
         '''
 
-        def collect_not_found_elements(category):
+        def collect_elements(category):
+            found_elements = []
             not_found_elements = []
             for items in category:
                 for metric, details in items.items():
                     if details['found'] == 0:
                         not_found_elements.append(metric)
-            return not_found_elements
+                    else:
+                        found_elements.append(metric)
+            return found_elements, not_found_elements
 
-        reasons = []
+        reasons_not_found = {}
+        reasons_found = {}
 
         # Check allowed metrics
         for key in ['products', 'financial_metrics', 'growth_metrics', 'date_range', 'countries_alpha_2_code']:
             if key in classification.get('allowed', {}):
-                not_found = collect_not_found_elements(classification['allowed'][key])
+                found, not_found = collect_elements(classification['allowed'][key])
+                if found:
+                    reasons_found[key] = found
                 if not_found:
-                    reasons.extend(not_found)
+                    reasons_not_found[key] = not_found
 
         # Check not allowed metrics
         for key in ['products', 'financial_metrics', 'growth_metrics', 'date_range']:
             if key in classification.get('not_allowed', {}):
-                not_allowed_metrics = collect_not_found_elements(classification['not_allowed'][key])
+                _, not_allowed_metrics = collect_elements(classification['not_allowed'][key])
                 if not_allowed_metrics or classification['not_allowed'][key]:
-                    reasons.extend(not_allowed_metrics)
+                    if key not in reasons_not_found:
+                        reasons_not_found[key] = not_allowed_metrics
+                    else:
+                        reasons_not_found[key].extend(not_allowed_metrics)
 
-        if reasons:
-            return False, reasons
+        if reasons_not_found:
+            return False, reasons_found, reasons_not_found
+        elif reasons_found == {}:
+            return False, reasons_found, reasons_not_found
 
-        return True, None
+        return True, reasons_found, None
     
 class Format:
     def __init__(self):
         pass
+
+    @staticmethod
+    def get_sysmessage_classification(prompt_template):
+        '''
+            Get the formatted prompt for the classification chain
+        '''
+        from datetime import datetime
+        today_date = datetime.today().strftime('%A %d %B %Y')
+        ## FORMAT THE PROMPT
+        prompt = PromptTemplate(
+            input_variables=['dynamic_system_message'],
+            template=prompt_template
+        )
+
+        dynamic_system_message = ""
+
+        dynamic_system_message += "\n## date_range:\n"
+        for key, value in DATERANGE_METRICS_LOOKUP.items():
+            dynamic_system_message += f"- {key}: {value['description']}\n"
+        
+        dynamic_system_message += "\n## financial_metrics:\n"
+        for key, value in FINANCIAL_METRICS_LOOKUP.items():
+            dynamic_system_message += f"- {key}: {value['description']}\n"
+
+        dynamic_system_message += "\n## growth_metrics:\n"
+        for key, value in GROWTH_METRICS_LOOKUP.items():
+            dynamic_system_message += f"- {key}: {value['description']}\n"
+
+        prompt_formatted = prompt.format(dynamic_system_message=dynamic_system_message)
+        return prompt_formatted
+
+    @staticmethod
+    def get_prompt_classification(prompt_template, user_question):
+        '''
+            Get the formatted prompt for the classification chain
+        '''
+        ## FORMAT THE PROMPT
+        prompt = PromptTemplate(
+            input_variables=['user_question'],
+            template=prompt_template
+        )
+
+        prompt_formatted = prompt.format(
+            user_question=user_question,
+        )
+        return prompt_formatted
+
+    @staticmethod
+    def get_classification_guidelines(classification:dict):
+        '''
+            Get the classification guidelines for the classification
+        '''
+        # Parse the input JSON string to a dictionary
+        metrics_info = classification
+        
+        # Start forming the response string
+        response = ""
+        
+        # Process products under the "allowed" category
+        if len(metrics_info['allowed']['products']) > 0:
+            response += "###Schema Linking Instructions:###\n"
+            for product in metrics_info['allowed']['products']:
+                for product_name, details in product.items():
+                    response += f"- {product_name} maps to the column {details['field_name']}\n"
+        
+        # Add growth metrics section
+        if len(metrics_info['allowed']['growth_metrics']) > 0:
+            response += "###Growth Metrics Instructions###\n"
+            for metric in metrics_info['allowed']['growth_metrics']:
+                for metric_name, details in metric.items():
+                    if details['found'] == 1:
+                        response += f"{metric_name}:\n{details['calculation_guidelines']}\n {details['calculation_example']}\n"
+        
+        # Add date_range section
+        if len(metrics_info['allowed']['date_range']) > 0:
+            response += "###Date Interpretation Instructions:###\n"
+            for metric in metrics_info['allowed']['date_range']:
+                for metric_name, details in metric.items():
+                    if details['found'] == 1:
+                        response += f"{metric_name}:\n{details['calculation_guidelines']}\n{details['calculation_example']}\n"
+        
+                # Add date_range section
+        if len(metrics_info['allowed']['financial_metrics']) > 0:
+            response += "\n### Financial Metrics instructions###:\n"
+            for metric in metrics_info['allowed']['financial_metrics']:
+                for metric_name, details in metric.items():
+                    if details['found'] == 1:
+                        response += f"{metric_name}: \n {details['calculation_guidelines']}\n"
+        
+        return response
+
+    @staticmethod
+    def get_prompt_simple_with_classifier(user_question, classifier_guidelines, prompt_template):
+        '''
+            Get the formatted prompt for the simple chain
+        '''
+        ## FORMAT THE PROMPT
+        prompt = PromptTemplate(
+            input_variables=['user_question', 'classifier_guidelines'],
+            template=prompt_template
+        )
+
+        prompt_formatted = prompt.format(
+            user_question=user_question,
+            classifier_guidelines = classifier_guidelines
+        )
+        # append to final prompt the current day including the day of the week
+        prompt_formatted += f"\nToday is {datetime.today().strftime('%A %d %B %Y')}"
+
+        return prompt_formatted
 
     @staticmethod
     def get_prompt_simple(user_question, prompt_template, table_schema):
@@ -590,7 +732,7 @@ class GBQUtils:
 
         return distinct_values
     
-    @st.cache_data(ttl=600)
+    @st.cache_data(ttl=600, show_spinner=False)
     def run_query(_self, query):
         try:
             query_job = _self.client.query(query)
@@ -612,3 +754,36 @@ class GBQUtils:
             return f"A Google Cloud error occurred: {error}"
         except Exception as e:
             return f"An unexpected error occurred: {e}"
+
+class Streamlit:
+    def format_reasons(self, reasons_found, reasons_not_found, answerable):
+        '''
+        Format the reasons for the classification into natural language.
+        
+        - If answerable is True, returns only the metrics found.
+        - If answerable is False, returns the metrics not found.
+        '''
+        if answerable:
+            formatted_reasons = "#### Our system classified your question as:\n"
+            # Add found metrics
+            for key, metrics in reasons_found.items():
+                formatted_reasons += f"- **{key.replace('_', ' ').title()}**: `{', '.join(metrics)}`\n"
+        else:
+            if reasons_found == {} and reasons_not_found == {}:
+                formatted_reasons = "Sorry, but it looks like your questions is not related to any of the metrics we have in our system. Please, try again with a different question."
+            else:
+                formatted_reasons = "#### Sorry, we coundn't interpret your question: \n"
+                formatted_reasons += "Your question contains the following metrics: \n"
+                # Add not found metrics
+                for key, metrics in reasons_not_found.items():
+                    formatted_reasons += f"- **{key.replace('_', ' ').title()}**: `{', '.join(metrics)}`\n"
+                formatted_reasons += "\n Which are not allowed in our system."
+
+        return formatted_reasons
+    
+    def get_status_elements(self, message: None):
+        if "Sorry" in message:
+            return st.error("We coundln't classify your question properly, look at the instructions below and rephrase it", icon="❗")
+        
+        elif "Our system" in message:
+            return st.info('Please, check if we correctly captured your question intent', icon="ℹ️")
