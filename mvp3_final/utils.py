@@ -103,7 +103,7 @@ class LLMUtils:
 
         return formatted_response
 
-    def invoke_openAI_w_classifier_vanilla(self, question: str, model = 'gpt-4-turbo'):
+    def invoke_openAI_w_classifier_vanilla(self, memory_messages_classifier: list, model = 'gpt-4-turbo'):
         '''
         Invoke openai vanilla chain with classfiier
         - Classify the question
@@ -111,7 +111,7 @@ class LLMUtils:
         '''
         ## Classify the question ##
         llm_classifier = LLMQueryClassification()
-        question_classfied = llm_classifier.invoke_query_classification_chain(user_question=question, model=model)
+        question_classfied = llm_classifier.invoke_query_classification_chain(memory_context=memory_messages_classifier, model=model)
 
         # process the classification
         classification_results = llm_classifier.process_classification(question_classfied)
@@ -182,27 +182,31 @@ class LLMQueryClassification(LLMUtils):
         super().__init__()
         pass
 
-    def invoke_query_classification_chain(self, user_question, model = 'gpt-4-turbo'):
+    def invoke_query_classification_chain(self, memory_context:list, model = 'gpt-4-turbo'):
         print("##Invoking Query Classification Chain##")
+
 
         sys_message_template = self.load_template_from_file(os.path.join(current_dir, 'templates/chain_w_classifier/prompt/qc_dynamic_system_message.txt'))
 
-        prompt_template = self.load_template_from_file(os.path.join(current_dir, 'templates/chain_w_classifier/prompt/qc_prompt_template.txt'))
-
-        user_question = user_question
-
         sys_message = Format.get_sysmessage_classification(prompt_template=sys_message_template)
 
-        prompt =  Format.get_prompt_classification(user_question=user_question, prompt_template=prompt_template)
 
-            # Messages
-        messages=[
-            {"role": "system", "content": sys_message},
-            {"role": "user", "content": prompt},
-        ]
+        if len(memory_context) == 1: # first message
 
+            prompt_template = self.load_template_from_file(os.path.join(current_dir, 'templates/chain_w_classifier/prompt/qc_prompt_template.txt'))
+
+            prompt =  Format.get_prompt_classification(user_question=memory_context[-1].get('content'), prompt_template=prompt_template)
+
+            messages=[
+                {"role": "system", "content": sys_message},
+                {"role": "user", "content": prompt},
+            ]
+        else: # second message
+            messages = memory_context
+            messages.insert(0, {"role": "system", "content": sys_message})
+
+        print("Incoming mememory context")
         print(messages)
-
         # API call
         response = self.client.chat.completions.create(
             model=model,
@@ -764,7 +768,7 @@ class Streamlit:
         - If answerable is False, returns the metrics not found.
         '''
         if answerable:
-            formatted_reasons = "#### Our system classified your question as:\n"
+            formatted_reasons = "##### Our system classified your question as:\n"
             # Add found metrics
             for key, metrics in reasons_found.items():
                 formatted_reasons += f"- **{key.replace('_', ' ').title()}**: `{', '.join(metrics)}`\n"
@@ -772,7 +776,7 @@ class Streamlit:
             if reasons_found == {} and reasons_not_found == {}:
                 formatted_reasons = "Sorry, but it looks like your questions is not related to any of the metrics we have in our system. Please, try again with a different question."
             else:
-                formatted_reasons = "#### Sorry, we coundn't interpret your question: \n"
+                formatted_reasons = "#### Sorry, we coudn't interpret your question: \n"
                 formatted_reasons += "Your question contains the following metrics: \n"
                 # Add not found metrics
                 for key, metrics in reasons_not_found.items():
@@ -783,7 +787,7 @@ class Streamlit:
     
     def get_status_elements(self, message: None):
         if "Sorry" in message:
-            return st.error("We coundln't classify your question properly, look at the instructions below and rephrase it", icon="❗")
+            return st.error("We couldn't classify your question, look at the instructions below and rephrase it", icon="❗")
         
         elif "Our system" in message:
             return st.info('Please, check if we correctly captured your question intent', icon="ℹ️")

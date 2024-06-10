@@ -88,10 +88,14 @@ def analyze_response(response, prompt):
 # set of llm_messages that will be displayed, to the user - hiding prompt engineering. 
 if 'display_messages' not in st.session_state:
     st.session_state.display_messages = []
-    welcome_message = {"role": "assistant", "content": "Welcome! Ask me any questions about Danish Endurance's Amazon Orders."}
+    welcome_message = {"role": "assistant", "content": "Welcome! Ask me almost 😁 any questions about Danish Endurance's Amazon Orders."}
     st.session_state.display_messages.append(welcome_message)
 
-st.subheader('''🚵‍♂️🔢 Danish Endurance's Amazon Analyst''')
+if 'memory_messages_classifier' not in st.session_state:
+    st.session_state.memory_messages_classifier = []
+
+
+st.subheader('''🚵‍♂️🔢 Danish Endurance's GPT''')
 memory = lc_memory.ConversationBufferMemory(
     chat_memory=lc_memory.StreamlitChatMessageHistory(key="langchain_messages"),
     return_messages=True,
@@ -153,17 +157,22 @@ for message in st.session_state.display_messages:
 
 
 if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analyst ..."):
-    st.session_state.display_messages.append({"role": "user", "content": prompt})
+    st.session_state.display_messages.append({"role": "user", "content": prompt}) # display message for user
+    st.session_state.memory_messages_classifier.append({"role": "user", "content": prompt}) 
+    # save context
+
     st.chat_message("user", avatar='🚵‍♂️').write(prompt)
 
     # create display message for assistant
     st.session_state.display_messages.append({"role": "assistant", "content": ""})
 
     with st.chat_message("assistant", avatar = "🤖"):
-        saved_context_response = ""
+        memory_query_generator = ""
 
-        with st.spinner("Classifying Your Question..."):
-            answerable, reasons_found, reasons_not_found, classifier_guidelines, question_classfied = llm.invoke_openAI_w_classifier_vanilla(prompt)
+        with st.spinner("Analysing your question..."):
+            answerable, reasons_found, reasons_not_found, classifier_guidelines, question_classfied = llm.invoke_openAI_w_classifier_vanilla(st.session_state.memory_messages_classifier)
+
+            st.session_state.memory_messages_classifier.append({"role": "assistant", "content": json.dumps(question_classfied)})
         
         formatted_reasons = streamlit_utils.format_reasons(reasons_found, reasons_not_found, answerable)
         
@@ -195,15 +204,15 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             nl_response, query_result_dict = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
             
             # LLM context
-            saved_context_response += f"\n{nl_response}"
-            memory.save_context(input_dict[0], {"output": saved_context_response})
+            memory_query_generator += f"\n{nl_response}"
+            memory.save_context(input_dict[0], {"output": memory_query_generator})
             
             # Display nl response
             st.session_state.display_messages[-1]['content'] += nl_response
             st.markdown(nl_response)
             
             st.dataframe(pd.DataFrame(query_result_dict))
-            st.session_state.display_messages.append({"role": "assistant", "content": saved_context_response})
+            st.session_state.display_messages.append({"role": "assistant", "content": memory_query_generator})
         else:
             # st.warning("Our systems couldn't answer your question. Please modify it:", icon="⚠️")
             streamlit_utils.get_status_elements(formatted_reasons)
