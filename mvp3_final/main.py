@@ -62,29 +62,38 @@ SCHEMA_LINKING_LOOKUP, GROWTH_METRICS_LOOKUP, FINANCIAL_METRICS_LOOKUP, DATERANG
 def analyze_response(response, prompt):
     formatted_response = Format.format_llm_response(response, prompt) # format to extract SQL query
 
+    is_error = False
+
     if formatted_response.get('sql_query') == None:
-        return "Your question didn't produce any results. Please, try another question."
+        is_error = True
+        query_results_csv = None
+        nl_response = "Your question didn't produce any results. Please, try another question."
+
     else: # RUN SQL QUERY ON DATABASE
         with st.spinner('Getting real-time data from Database...'):
             query_result = gbq.run_query(formatted_response.get('sql_query'))
             # st.sidebar.write(query_result)
         
         if "error" in query_result:
-            return "SYNTAX ERROR: {}".format(query_result)
-        
+            is_error = True
+            query_results_csv = None
+            nl_response = "Your question didn't produce any results. Please, try another question."        
         else: # didnt produce an error
             if len(query_result) > 50:
-                return "", query_result
+                is_error = False
+                nl_response = "Your question produced a large result. Please, download the file to view the results."
             else:
                 query_results_csv = Format.save_dict_to_string(query_result)
-                # st.sidebar.write(query_results_csv)
-                print(query_results_csv)
+                # # st.sidebar.write(query_results_csv)
+                # print(query_results_csv)
 
-                # Parse Tabular Response to NL and return it
                 with st.spinner('Generating Natural Language Response...'):
                     nl_response = llm_tabular.invoke_tabular2sql_chain(user_question=prompt, tabular_response=query_results_csv)
-
-                return nl_response, query_result
+    with st.sidebar:
+        st.write(is_error)
+        st.write(nl_response)
+        st.write(query_result)
+    return is_error, nl_response, query_result
         
 
 # set of llm_messages that will be displayed, to the user - hiding prompt engineering. 
@@ -176,16 +185,6 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
         
         formatted_reasons = streamlit_utils.format_reasons(reasons_found, reasons_not_found, answerable)
         
-        # with st.sidebar:
-        #     st.markdown('## Query Classification')
-        #     st.markdown(f'### Is the question answerable? {answerable}')
-        #     st.markdown(f'### Reasons: {reasons_found}')
-        #     st.markdown(f'### Reasons nto found: {reasons_not_found}')
-        #     st.markdown('### Classification Results:')
-        #     st.markdown(f'### classifierguidelines: {classifier_guidelines}')
-        #     st.json(json.dumps(question_classfied))
-        #     st.divider()
-
         if answerable:
 
             st.info('Please, check if we correctly captured your question intent', icon="ℹ️")
@@ -201,7 +200,7 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
                     # st.markdown(generated_query)
                 st.session_state.run_id = cb.traced_runs[0].id
             
-            nl_response, query_result_dict = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
+            is_error, nl_response, query_result_dict = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
             
             # LLM context
             memory_query_generator += f"\n{nl_response}"
@@ -211,7 +210,11 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             st.session_state.display_messages[-1]['content'] += nl_response
             st.markdown(nl_response)
             
-            st.dataframe(pd.DataFrame(query_result_dict))
+            # display dataframe
+            if not is_error:
+                st.dataframe(pd.DataFrame(query_result_dict))
+
+
             st.session_state.display_messages.append({"role": "assistant", "content": memory_query_generator})
         else:
             # st.warning("Our systems couldn't answer your question. Please modify it:", icon="⚠️")
