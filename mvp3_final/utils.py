@@ -26,35 +26,66 @@ from google.cloud.exceptions import GoogleCloudError, BadRequest
 import streamlit as st
 current_dir = os.path.dirname(__file__)
 
+
+class CaseInsensitiveDict:
+    def __init__(self, original_dict):
+        self.original_dict = original_dict
+        self.lowercase_mapping = {str(k).lower(): k for k in original_dict}
+    
+    def get_original_key(self, key):
+        lower_key = key.lower()
+        print("lower_key", lower_key)
+        return self.lowercase_mapping.get(lower_key, None)
+    
+    def items(self):
+        return self.original_dict.items()
+
 @st.cache_data(show_spinner=True)
 def get_lookups():
     '''
-        Get the lookup data for the streamlit app
+    Get the lookup data for the Streamlit app.
     '''
-    with open(os.path.join(current_dir, 'templates/chain_w_classifier/lookups/fields_look_up.json'), 'r') as f:
+    current_dir = os.path.dirname(__file__)  # Ensure current_dir is defined
+    lookup_files = {
+        'fields_look_up': 'templates/chain_w_classifier/lookups/fields_look_up.json',
+        'growth_metrics': 'templates/chain_w_classifier/lookups/growth_metrics.json',
+        'financial_metrics': 'templates/chain_w_classifier/lookups/financial_metrics.json',
+        'date_range': 'templates/chain_w_classifier/lookups/date_range.json'
+    }
+    
+    with open(os.path.join(current_dir, lookup_files['fields_look_up']), 'r') as f:
         data = json.load(f)
 
     # Initialize the output dictionary
-    SCHEMA_LINKING_LOOKUP = {}
+    schema_linking_lookup = {}
 
     # Loop through each field in the 'fields' list
     for field in data['fields']:
         field_name = field['field_name']
         # Map each distinct value to the field_name
         for value in field['distinct_values']:
-            SCHEMA_LINKING_LOOKUP[value.lower()] = field_name.lower()
-
-    with open(os.path.join(current_dir, 'templates/chain_w_classifier/lookups/growth_metrics.json'), 'r') as f:
-        GROWTH_METRICS_LOOKUP = json.load(f)
-
-    with open(os.path.join(current_dir, 'templates/chain_w_classifier/lookups/financial_metrics.json'), 'r') as f:
-        FINANCIAL_METRICS_LOOKUP = json.load(f)
-
-    with open(os.path.join(current_dir, 'templates/chain_w_classifier/lookups/date_range.json'), 'r') as f:
-        DATERANGE_METRICS_LOOKUP = json.load(f)
+            schema_linking_lookup[value] = field_name
     
-    return SCHEMA_LINKING_LOOKUP, GROWTH_METRICS_LOOKUP, FINANCIAL_METRICS_LOOKUP, DATERANGE_METRICS_LOOKUP
+    schema_linking_lookup_case_insensitive = CaseInsensitiveDict(schema_linking_lookup)
 
+    with open(os.path.join(current_dir, lookup_files['growth_metrics']), 'r') as f:
+        growth_metrics_lookup = json.load(f)
+    
+    growth_metrics_lookup_case_insensitive = CaseInsensitiveDict(growth_metrics_lookup)
+
+    with open(os.path.join(current_dir, lookup_files['financial_metrics']), 'r') as f:
+        financial_metrics_lookup = json.load(f)
+    
+    financial_metrics_lookup_case_insensitive = CaseInsensitiveDict(financial_metrics_lookup)
+
+    with open(os.path.join(current_dir, lookup_files['date_range']), 'r') as f:
+        date_range_lookup = json.load(f)
+    
+    date_range_lookup_case_insensitive = CaseInsensitiveDict(date_range_lookup)
+    
+    return schema_linking_lookup_case_insensitive, growth_metrics_lookup_case_insensitive, financial_metrics_lookup_case_insensitive, date_range_lookup_case_insensitive
+
+# Retrieve the case-insensitive lookup dictionaries
 SCHEMA_LINKING_LOOKUP, GROWTH_METRICS_LOOKUP, FINANCIAL_METRICS_LOOKUP, DATERANGE_METRICS_LOOKUP = get_lookups()
 
 class LLMUtils:
@@ -230,14 +261,15 @@ class LLMQueryClassification(LLMUtils):
 
         def process_category(items, lookup):
             results = []
+            look_up_lower = lookup.lowercase_mapping
+            look_up_original = lookup.original_dict
+
             for item in items:
-                # print(item)
-                if lookup == SCHEMA_LINKING_LOOKUP:
-                    item = item.lower()
-                if item in lookup:
-                    item_details = lookup[item]
-                    if lookup == SCHEMA_LINKING_LOOKUP:
-                        results.append({item: {'found': 1, 'field_name': item_details}})
+                if item.lower() in look_up_lower:
+                    original_item = lookup.get_original_key(item.lower())
+                    item_details = look_up_original[original_item]
+                    if lookup is SCHEMA_LINKING_LOOKUP:
+                        results.append({original_item: {'found': 1, 'field_name': item_details}})
                         continue
                     else:
                         results.append({
