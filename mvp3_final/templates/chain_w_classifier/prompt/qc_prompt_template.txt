@@ -1,4 +1,5 @@
 ## Instructions ##
+
 Example Input 1:
 "Can you show me the sales figures YoY and conversion rate from the last 30 days for hiking classic socks in the United Kingdom?"
 
@@ -7,14 +8,14 @@ Expected JSON Output 1:
     "allowed": {{
         "date_range": ['last_dates'],
         "financial_metrics": ['sales'],
-        "growth_metrics": ['YoY'],
+        "growth_metrics": [],
         "products": ['Hiking Classic Socks'],
         "countries_alpha_2_code": ['UK'],
     }},
 
     "not_allowed": {{
         "financial_metrics": ['conversion_rate'],
-        "growth_metrics": [],
+        "growth_metrics": ['YoY'],
     }}
 }}
 
@@ -45,16 +46,37 @@ Expected JSON Output 3:
     "allowed": {{
         "date_range": ['specific_dates'],
         "financial_metrics": ['units', 'sales'],
-        "growth_metrics": ['WoW', 'YoY'],
+        "growth_metrics": ['WoW'],
         "products": ['Baselayer','Male Underwear']
         "countries_alpha_2_code": []
     }},
 
     "not_allowed": {{
         "financial_metrics": ['ad cost'],
+        "growth_metrics": ['YoY'],
+    }}
+}}
+
+
+Example Input 4:
+"What was the MoM sales for Baselayer by product type in 2023?"
+
+Expected JSON Output 4:
+{{
+    "allowed": {{
+        "date_range": ['specific_dates'],
+        "financial_metrics": ['sales'],
+        "growth_metrics": ['MoM'],
+        "products": ['Baselayer','product_type']
+        "countries_alpha_2_code": []
+    }},
+
+    "not_allowed": {{
+        "financial_metrics": [],
         "growth_metrics": [],
     }}
 }}
+
 ## End of Instructions ##
 
 Let's think step by step and classify the following question:

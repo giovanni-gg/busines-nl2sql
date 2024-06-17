@@ -23,32 +23,32 @@ import os
 current_dir = os.path.dirname(__file__)
 
 
-def check_password():
-    """Returns `True` if the user had the correct password."""
+# def check_password():
+#     """Returns `True` if the user had the correct password."""
 
-    def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
-        else:
-            st.session_state["password_correct"] = False
+#     def password_entered():
+#         """Checks whether a password entered by the user is correct."""
+#         if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
+#             st.session_state["password_correct"] = True
+#             del st.session_state["password"]  # Don't store the password.
+#         else:
+#             st.session_state["password_correct"] = False
 
-    # Return True if the password is validated.
-    if st.session_state.get("password_correct", False):
-        return True
+#     # Return True if the password is validated.
+#     if st.session_state.get("password_correct", False):
+#         return True
 
-    # Show input for password.
-    st.text_input(
-        "Password", type="password", on_change=password_entered, key="password"
-    )
-    if "password_correct" in st.session_state:
-        st.error("😕 Password incorrect")
-    return False
+#     # Show input for password.
+#     st.text_input(
+#         "Password", type="password", on_change=password_entered, key="password"
+#     )
+#     if "password_correct" in st.session_state:
+#         st.error("😕 Password incorrect")
+#     return False
 
 
-if not check_password():
-    st.stop()  # Do not continue if check_password is not True.
+# if not check_password():
+#     st.stop()  # Do not continue if check_password is not True.
 
 client = Client()
 gbq = GBQUtils()
@@ -67,11 +67,13 @@ def analyze_response(response, prompt):
     if formatted_response.get('sql_query') == None:
         is_error = True
         query_results_csv = None
+        sql_query = None
         nl_response = "Your question didn't produce any results. Please, try another question."
 
     else: # RUN SQL QUERY ON DATABASE
+        sql_query = formatted_response.get('sql_query')
         with st.spinner('Getting real-time data from Database...'):
-            query_result = gbq.run_query(formatted_response.get('sql_query'))
+            query_result = gbq.run_query(sql_query)
             # st.sidebar.write(query_result)
         
         if "error" in query_result:
@@ -89,17 +91,17 @@ def analyze_response(response, prompt):
 
                 with st.spinner('Generating Natural Language Response...'):
                     nl_response = llm_tabular.invoke_tabular2sql_chain(user_question=prompt, tabular_response=query_results_csv)
-    with st.sidebar:
-        st.write(is_error)
-        st.write(nl_response)
-        st.write(query_result)
-    return is_error, nl_response, query_result
+    # with st.sidebar:
+    #     st.write(is_error)
+    #     st.write(nl_response)
+    #     st.write(query_result)
+    return is_error, nl_response, query_result, sql_query
         
 
 # set of llm_messages that will be displayed, to the user - hiding prompt engineering. 
 if 'display_messages' not in st.session_state:
     st.session_state.display_messages = []
-    welcome_message = {"role": "assistant", "content": "Welcome! Ask me almost 😁 any questions about Danish Endurance's Amazon Orders."}
+    welcome_message = {"role": "assistant", "content": "Welcome! Ask me questions about Danish Endurance's Amazon Orders."}
     st.session_state.display_messages.append(welcome_message)
 
 if 'memory_messages_classifier' not in st.session_state:
@@ -111,35 +113,22 @@ memory = lc_memory.ConversationBufferMemory(
     memory_key="chat_history",
 )
 with st.sidebar:
-    st.markdown('## Technical Validation Testing')
+    st.markdown('# DE Data\'s Amazon Sales Specialist Beta')
     st.markdown("Reload page to clear the chat history")
     st.divider()
+    st.markdown('## The system supports the following metrics:')
 
-    # st.success('Please, leave a feedback after the response')
-    # st.markdown('''### Easy Copy-Paste Feedback''')
-    # st.markdown('''#### Use the following feedback options:''')
-    # st.code('syntax_error')
-    # st.markdown('''*failed to execute query*''')
-    # st.code('column_mapping')
-    # st.markdown('''*maps to wrong column e.g Baselayer -> product_name*''')
-    # st.code('question_misinterpretation')
-    # st.markdown('''*e.g "ask  for last month" but gets last 30 days*''')
-    # st.code('context_misinterpretation')
-    # st.markdown('''*e.g "ask  for n orders" but gets number of lines*''')
-    # st.code('faulty_logic')
-    # st.markdown('''*wrong calculations - e.g YoY, Sum Basket Value*''')
-    # st.divider()
-    # st.markdown('''
-    #             ## What Feedback I'm looking for?
-    #             ### Model Accuracy
-    #             - Is the generated SQL query correct?
-    #             - Did the model correctly capture the intent of the question? (Reflect on the quality of the prompt)
+    st.markdown('### Columns:')
+    st.markdown(" - `order_id`, `buyer_email`, `market`, `child_asin`, `product_marketing_category`, `product_name`, `product_pack`, `product_and_pack`, `product_category`, `product_type`, `product_size`, `product_colour`, `sales`, `units`")
 
-    #             ### UX/UI
-    #             *Fundamently, this task is also an UX/UI design problem*
-    #             - Is the generated answer well formatted?
-    #             - Do you think the model could provide additional information to the user in order to the user understand and pottentially improve the prompt?
-    #             ''')
+    st.markdown('### Financial Metrics:')
+    st.markdown(" - Sales, units, basket size/value, No. of orders, No. of customers")
+
+    st.markdown('### Growth Metrics:')
+    st.markdown(" - Week-over-week (WoW), Month-over-month (MoM)")
+
+
+
 
 # Add a button to choose between llmchain and expression chain
 _DEFAULT_SYSTEM_PROMPT = llm.load_template_from_file(os.path.join(current_dir,"templates/chain_w_classifier/prompt/tf-sql_sysmessage.txt" ))
@@ -200,12 +189,17 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
                     # st.markdown(generated_query)
                 st.session_state.run_id = cb.traced_runs[0].id
             
-            is_error, nl_response, query_result_dict = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
+            is_error, nl_response, query_result_dict, sql_query = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
             
-            # LLM context
-            memory_query_generator += f"\n{nl_response}"
-            memory.save_context(input_dict[0], {"output": memory_query_generator})
+            if not is_error:
+                # LLM context
+                memory_query_generator += f"\n{nl_response}\n {sql_query}"
+                memory.save_context(input_dict[0], {"output": memory_query_generator})
+                st.markdown("### Response:")
+            else:
+                st.warning("Our systems couldn't answer your question. Please modify it:", icon="⚠️")
             
+
             # Display nl response
             st.session_state.display_messages[-1]['content'] += nl_response
             st.markdown(nl_response)
@@ -226,7 +220,7 @@ if st.session_state.get("run_id"):
     run_id = st.session_state.run_id
     feedback = streamlit_feedback(
         feedback_type=feedback_option,
-        optional_text_label="syntax_error, column_mapping, question_misinterpretation, context_error, faulty_logic",
+        optional_text_label="Leave a comment (optional)",
         key=f"feedback_{run_id}",
     )
 
