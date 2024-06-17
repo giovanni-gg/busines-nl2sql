@@ -5,3 +5,4 @@ langchain
 langchain-openai
 streamlit_feedback
 langchain_community
+tenacity
