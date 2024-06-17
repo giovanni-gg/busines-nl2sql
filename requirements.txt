@@ -1,7 +1,7 @@
 openai
 streamlit
 google-cloud-bigquery
-langchain
+langchain == 0.2.3
 langchain-openai
 streamlit_feedback
 langchain_community
