@@ -23,32 +23,32 @@ import os
 current_dir = os.path.dirname(__file__)
 
 
-def check_password():
-    """Returns `True` if the user had the correct password."""
+# def check_password():
+#     """Returns `True` if the user had the correct password."""
 
-    def password_entered():
-        """Checks whether a password entered by the user is correct."""
-        if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
-        else:
-            st.session_state["password_correct"] = False
+#     def password_entered():
+#         """Checks whether a password entered by the user is correct."""
+#         if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
+#             st.session_state["password_correct"] = True
+#             del st.session_state["password"]  # Don't store the password.
+#         else:
+#             st.session_state["password_correct"] = False
 
-    # Return True if the password is validated.
-    if st.session_state.get("password_correct", False):
-        return True
+#     # Return True if the password is validated.
+#     if st.session_state.get("password_correct", False):
+#         return True
 
-    # Show input for password.
-    st.text_input(
-        "Password", type="password", on_change=password_entered, key="password"
-    )
-    if "password_correct" in st.session_state:
-        st.error("😕 Password incorrect")
-    return False
+#     # Show input for password.
+#     st.text_input(
+#         "Password", type="password", on_change=password_entered, key="password"
+#     )
+#     if "password_correct" in st.session_state:
+#         st.error("😕 Password incorrect")
+#     return False
 
 
-if not check_password():
-    st.stop()  # Do not continue if check_password is not True.
+# if not check_password():
+#     st.stop()  # Do not continue if check_password is not True.
 
 client = Client()
 gbq = GBQUtils()
@@ -128,14 +128,10 @@ with st.sidebar:
     st.markdown(" - Week-over-week (WoW), Month-over-month (MoM)")
 
 
-
-
 # Add a button to choose between llmchain and expression chain
 _DEFAULT_SYSTEM_PROMPT = llm.load_template_from_file(os.path.join(current_dir,"templates/chain_w_classifier/prompt/tf-sql_sysmessage.txt" ))
 system_prompt = _DEFAULT_SYSTEM_PROMPT
 system_prompt = system_prompt.strip().replace("{", "{{").replace("}", "}}")
-
-
 
 # Create Chain
 chain = get_expression_chain(system_prompt, memory)
@@ -155,11 +151,12 @@ for message in st.session_state.display_messages:
 
 
 if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analyst ..."):
-    st.session_state.display_messages.append({"role": "user", "content": prompt}) # display message for user
+    # save prompt
+    st.session_state.display_messages.append({"role": "user", "content": prompt})
     st.session_state.memory_messages_classifier.append({"role": "user", "content": prompt}) 
-    # save context
 
-    st.chat_message("user", avatar='🚵‍♂️').write(prompt)
+    # write prompt
+    st.chat_message("user", avatar='🚵‍♂️').markdown(prompt)
 
     # create display message for assistant
     st.session_state.display_messages.append({"role": "assistant", "content": ""})
@@ -191,11 +188,18 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             
             is_error, nl_response, query_result_dict, sql_query = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
             
+            with st.sidebar:
+                st.markdown('### SQL Query:')
+                st.markdown(sql_query)
+                st.markdown('### Natural Language Response:')
+                st.markdown(nl_response)
+
             if not is_error:
                 # LLM context
-                memory_query_generator += f"\n{nl_response}\n {sql_query}"
+                memory_query_generator += f"{sql_query}"
                 memory.save_context(input_dict[0], {"output": memory_query_generator})
-                st.markdown("### Response:")
+                st.session_state.display_messages[-1]['content'] += "### Response:\n"
+                st.markdown("### Response:\n")
             else:
                 st.warning("Our systems couldn't answer your question. Please modify it:", icon="⚠️")
             
@@ -208,13 +212,11 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             if not is_error:
                 st.dataframe(pd.DataFrame(query_result_dict))
 
-
-            st.session_state.display_messages.append({"role": "assistant", "content": memory_query_generator})
         else:
             # st.warning("Our systems couldn't answer your question. Please modify it:", icon="⚠️")
             streamlit_utils.get_status_elements(formatted_reasons)
+            st.session_state.display_messages[-1]['content'] += formatted_reasons
             st.markdown(formatted_reasons)
-            st.session_state.display_messages.append({"role": "assistant", "content": "I'm sorry, I can't answer this question. Please, ask another question."})
 
 if st.session_state.get("run_id"):
     run_id = st.session_state.run_id

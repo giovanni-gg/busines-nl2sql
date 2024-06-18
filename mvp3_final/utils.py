@@ -238,6 +238,10 @@ class LLMQueryClassification(LLMUtils):
 
         print("Incoming mememory context")
         print(messages)
+
+        with st.sidebar:
+            st.write("Memory Context")
+            st.write(messages)
         # API call
         response = self.client.chat.completions.create(
             model=model,
@@ -807,7 +811,7 @@ class Streamlit:
             for key, metrics in reasons_found.items():
                 formatted_reasons += f"- **{key.replace('_', ' ').title()}**: `{', '.join(metrics)}`\n"
         else:
-            if reasons_found == {} and reasons_not_found == {}:
+            if reasons_found == {} and reasons_not_found == {}: # No metrics found
                 formatted_reasons = "Sorry, but it looks like your questions is not related to any of the metrics we have in our system. Please, try again with a different question."
             else:
                 formatted_reasons = "#### Sorry, we coudn't interpret your question: \n"
@@ -815,7 +819,7 @@ class Streamlit:
                 # Add not found metrics
                 for key, metrics in reasons_not_found.items():
                     formatted_reasons += f"- **{key.replace('_', ' ').title()}**: `{', '.join(metrics)}`\n"
-                formatted_reasons += "\n Which are not allowed in our system."
+                formatted_reasons += "\n Which we currently don't support. Look at the tab on your left to see the allowed metrics."
 
         return formatted_reasons
     
