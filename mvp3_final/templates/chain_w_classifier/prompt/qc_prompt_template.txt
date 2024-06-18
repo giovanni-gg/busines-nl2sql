@@ -1,7 +1,7 @@
 ## Instructions ##
 
 Example Input 1:
-"Can you show me the sales figures YoY and conversion rate from the last 30 days for hiking classic socks in the United Kingdom?"
+"Can you show me the sales figures YoY and conversion rate from the last 30 days for hiking classic socks in the United Kingdo?"
 
 Expected JSON Output 1:
 {{
@@ -76,6 +76,7 @@ Expected JSON Output 4:
         "growth_metrics": [],
     }}
 }}
+
 
 ## End of Instructions ##
 

@@ -217,12 +217,11 @@ class LLMQueryClassification(LLMUtils):
         print("##Invoking Query Classification Chain##")
 
 
-        sys_message_template = self.load_template_from_file(os.path.join(current_dir, 'templates/chain_w_classifier/prompt/qc_dynamic_system_message.txt'))
-
-        sys_message = Format.get_sysmessage_classification(prompt_template=sys_message_template)
-
-
         if len(memory_context) == 1: # first message
+
+            sys_message_template = self.load_template_from_file(os.path.join(current_dir, 'templates/chain_w_classifier/prompt/qc_dynamic_system_message.txt'))
+
+            sys_message = Format.get_sysmessage_classification(prompt_template=sys_message_template)
 
             prompt_template = self.load_template_from_file(os.path.join(current_dir, 'templates/chain_w_classifier/prompt/qc_prompt_template.txt'))
 
@@ -234,14 +233,8 @@ class LLMQueryClassification(LLMUtils):
             ]
         else: # second message
             messages = memory_context
-            messages.insert(0, {"role": "system", "content": sys_message})
+            # messages.insert(0, {"role": "user", "content": sys_message})
 
-        print("Incoming mememory context")
-        print(messages)
-
-        with st.sidebar:
-            st.write("Memory Context")
-            st.write(messages)
         # API call
         response = self.client.chat.completions.create(
             model=model,
@@ -249,6 +242,8 @@ class LLMQueryClassification(LLMUtils):
             messages=messages,
             response_format={ "type": "json_object" }
         )
+
+        st.session_state.memory_messages_classifier = messages
 
         return json.loads(response.choices[0].message.content)
 

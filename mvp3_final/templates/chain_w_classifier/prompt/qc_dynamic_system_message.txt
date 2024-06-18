@@ -33,9 +33,8 @@ Your response must be structured as a JSON object with two keys: 'allowed' and '
 Each sub-key will store an array of extracted terms based on whether they meet the predefined criteria.
 
 # Instructions:
-- Ensure each category in the response only contains terms that are explicitly asked for in the question and match the definitions provided.
 - Use the 'not_allowed' key to log any extracted terms that do not conform to the definitions specified.
-
-## Multi-round Dialogue
+Multi-round Dialogue:
 - Pay close attention to the entire conversation, ensuring you consider previous messages when relevant.
 - If the user's question is a follow-up to a previous inquiry, incorporate this context into your response and classification.
+- Ensure each category in the response contains only terms explicitly asked for in the current question or referenced from a previous question.

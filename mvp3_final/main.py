@@ -66,7 +66,7 @@ def analyze_response(response, prompt):
 
     if formatted_response.get('sql_query') == None:
         is_error = True
-        query_results_csv = None
+        query_result = None
         sql_query = None
         nl_response = "Your question didn't produce any results. Please, try another question."
 
@@ -82,12 +82,9 @@ def analyze_response(response, prompt):
             nl_response = "Your question didn't produce any results. Please, try another question."        
         else: # didnt produce an error
             if len(query_result) > 50:
-                is_error = False
                 nl_response = "Your question produced a large result. Please, download the file to view the results."
             else:
                 query_results_csv = Format.save_dict_to_string(query_result)
-                # # st.sidebar.write(query_results_csv)
-                # print(query_results_csv)
 
                 with st.spinner('Generating Natural Language Response...'):
                     nl_response = llm_tabular.invoke_tabular2sql_chain(user_question=prompt, tabular_response=query_results_csv)
@@ -172,7 +169,6 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
         formatted_reasons = streamlit_utils.format_reasons(reasons_found, reasons_not_found, answerable)
         
         if answerable:
-
             st.info('Please, check if we correctly captured your question intent', icon="ℹ️")
 
             st.session_state.display_messages[-1]['content'] += formatted_reasons
@@ -187,12 +183,6 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
                 st.session_state.run_id = cb.traced_runs[0].id
             
             is_error, nl_response, query_result_dict, sql_query = analyze_response(generated_query, prompt) # analyze the response to check if the produced a SQL Query or not
-            
-            with st.sidebar:
-                st.markdown('### SQL Query:')
-                st.markdown(sql_query)
-                st.markdown('### Natural Language Response:')
-                st.markdown(nl_response)
 
             if not is_error:
                 # LLM context
@@ -217,6 +207,10 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             streamlit_utils.get_status_elements(formatted_reasons)
             st.session_state.display_messages[-1]['content'] += formatted_reasons
             st.markdown(formatted_reasons)
+
+
+with st.sidebar:
+    st.write(st.session_state.memory_messages_classifier)
 
 if st.session_state.get("run_id"):
     run_id = st.session_state.run_id
