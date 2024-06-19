@@ -98,7 +98,26 @@ def analyze_response(response, prompt):
 # set of llm_messages that will be displayed, to the user - hiding prompt engineering. 
 if 'display_messages' not in st.session_state:
     st.session_state.display_messages = []
-    welcome_message = {"role": "assistant", "content": "Welcome! Ask me questions about Danish Endurance's Amazon Orders."}
+    welcome_message = {"role": "assistant", "content": """Welcome! Ask me questions about Danish Endurance's Amazon Orders.
+
+#### How to make yourself understood by the system:
+    
+###### 1. Be Direct and Clear:
+
+- Ask precise and straightforward questions. Avoid vague or ambiguous language.
+- Example: Instead of "How were the sales?" ask "What were the total sales in May 2024?"
+                       
+###### 2. When asking about products, be specific:
+- Use the exact name as listed in the dashboards. For example, it can be a product category, product type or even product names/child ASINs.
+- Instead of "How did the socks perform?" ask "What was the sales of hiking classic socks last week?"
+                       
+###### 3. Specify a Time-Frame:
+- Always specify the time frame you are interested in either relatively (last week) or specifically (Dec 2023).
+
+###### 🟢😎 Here are some examples of well-formated questions:
+- What were the sales for men's polo shirt by product colour last week?
+- How many units were sold of Male Underwear and Baselayer in 2023?
+- What was the asin with the highest sales last week?"""}
     st.session_state.display_messages.append(welcome_message)
 
 if 'memory_messages_classifier' not in st.session_state:
@@ -145,7 +164,6 @@ for message in st.session_state.display_messages:
     with st.chat_message(message["role"], avatar=avatar):
         streamlit_utils.get_status_elements(message["content"])
         st.markdown(message["content"])
-
 
 if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analyst ..."):
     # save prompt
@@ -207,6 +225,8 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             streamlit_utils.get_status_elements(formatted_reasons)
             st.session_state.display_messages[-1]['content'] += formatted_reasons
             st.markdown(formatted_reasons)
+with st.sidebar:
+    st.write(st.session_state.memory_messages_classifier)
 
 if st.session_state.get("run_id"):
     run_id = st.session_state.run_id

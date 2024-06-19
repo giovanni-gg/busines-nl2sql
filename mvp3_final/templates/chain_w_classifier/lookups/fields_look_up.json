@@ -64,7 +64,14 @@
             "field_name": "child_asin",
             "distinct_values":["child_asin"]
         },
-
+        {
+            "field_name": "order_id",
+            "distinct_values":["order_id"]
+        },
+        {
+            "field_name": "buyer_email",
+            "distinct_values":["buyer_email"]
+        },
         {
             "field_name": "child_asin",
             "field_description": "The unique identifier for the specific product variant purchased; can be used interchangeably with economic number",

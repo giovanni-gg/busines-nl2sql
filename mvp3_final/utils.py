@@ -374,15 +374,15 @@ class Format:
 
         dynamic_system_message = ""
 
-        dynamic_system_message += "\n## date_range:\n"
+        dynamic_system_message += "\n## date_range: Identify and extract the time period mentioned in the question. This can include the two categories below:\n"
         for key, value in DATERANGE_METRICS_LOOKUP.items():
             dynamic_system_message += f"- {key}: {value['description']}\n"
         
-        dynamic_system_message += "\n## financial_metrics:\n"
+        dynamic_system_message += "\n## financial_metrics: Identify and list any financial metrics mentioned in the question. This can include the metrics below:\n"
         for key, value in FINANCIAL_METRICS_LOOKUP.items():
             dynamic_system_message += f"- {key}: {value['description']}\n"
 
-        dynamic_system_message += "\n## growth_metrics:\n"
+        dynamic_system_message += "\n## growth_metrics: Indicators that measure the growth rate of various aspects of the business, which are period-over-period calculations. This can include the metrics below:\n"
         for key, value in GROWTH_METRICS_LOOKUP.items():
             dynamic_system_message += f"- {key}: {value['description']}\n"
 
