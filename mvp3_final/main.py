@@ -225,8 +225,8 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             streamlit_utils.get_status_elements(formatted_reasons)
             st.session_state.display_messages[-1]['content'] += formatted_reasons
             st.markdown(formatted_reasons)
-with st.sidebar:
-    st.write(st.session_state.memory_messages_classifier)
+# with st.sidebar:
+#     st.write(st.session_state.memory_messages_classifier)
 
 if st.session_state.get("run_id"):
     run_id = st.session_state.run_id
