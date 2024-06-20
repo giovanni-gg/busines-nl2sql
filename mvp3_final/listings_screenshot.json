@@ -1,19 +1,4 @@
 {
-    "units": {
-        "description": "Whenver the user asks for units or any similar term that refers to the number of items sold.",
-        "calculation_guidelines": "Use the column 'units' to perform the calculation",
-        "calculation_example": null
-    },
-    "sales": {
-        "description": "Any metrics related to sales, including 'sales', 'revenue', 'net sales', 'top sales'.",
-        "calculation_guidelines": "Use the column gross_sales to perform the calculation",
-        "calculation_example": null
-    },
-    "no_orders": {
-        "description": "Number of Orders",
-        "calculation_guidelines": "Use COUNT(distinct order_id) in order to get the proper number of order.",
-        "calculation_example": null
-    },
     "no_customers": {
         "description": "Whenever the user asks for number of customers, buyers, or unique customers.",
         "calculation_guidelines": "Use COUNT(distinct buyer_email) in order to get the proper number of customers.",
@@ -30,3 +15,4 @@
         "calculation_example": null
     }
 }
+

@@ -291,7 +291,7 @@ class LLMQueryClassification(LLMUtils):
 
             for category, lookup in [
                 ('products', SCHEMA_LINKING_LOOKUP),
-                ('countries_alpha_2_code', SCHEMA_LINKING_LOOKUP),
+                ('markets', SCHEMA_LINKING_LOOKUP),
                 ('financial_metrics', FINANCIAL_METRICS_LOOKUP),
                 ('growth_metrics', GROWTH_METRICS_LOOKUP),
                 ('date_range', DATERANGE_METRICS_LOOKUP)
@@ -330,7 +330,7 @@ class LLMQueryClassification(LLMUtils):
         reasons_found = {}
 
         # Check allowed metrics
-        for key in ['products', 'financial_metrics', 'growth_metrics', 'date_range', 'countries_alpha_2_code']:
+        for key in ['products', 'financial_metrics', 'growth_metrics', 'date_range', 'markets']:
             if key in classification.get('allowed', {}):
                 found, not_found = collect_elements(classification['allowed'][key])
                 if found:
@@ -374,15 +374,15 @@ class Format:
 
         dynamic_system_message = ""
 
-        dynamic_system_message += "\n## date_range: Identify and extract the time period mentioned in the question. This can include the two categories below:\n"
+        dynamic_system_message += "\n### date_range: Identify and extract the time period mentioned in the question. This can include the two categories below:\n"
         for key, value in DATERANGE_METRICS_LOOKUP.items():
             dynamic_system_message += f"- {key}: {value['description']}\n"
         
-        dynamic_system_message += "\n## financial_metrics: Identify and list any financial metrics mentioned in the question. This can include the metrics below:\n"
+        dynamic_system_message += "\n### financial_metrics: Identify and list any financial metrics mentioned in the question. This can include the metrics below:\n"
         for key, value in FINANCIAL_METRICS_LOOKUP.items():
             dynamic_system_message += f"- {key}: {value['description']}\n"
 
-        dynamic_system_message += "\n## growth_metrics: Indicators that measure the growth rate of various aspects of the business, which are period-over-period calculations. This can include the metrics below:\n"
+        dynamic_system_message += "\n### growth_metrics: Indicators that measure the growth rate of various aspects of the business, which are period-over-period calculations. This can include the metrics below:\n"
         for key, value in GROWTH_METRICS_LOOKUP.items():
             dynamic_system_message += f"- {key}: {value['description']}\n"
 

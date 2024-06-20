@@ -134,8 +134,9 @@ with st.sidebar:
     st.divider()
     st.markdown('## The system supports the following metrics:')
 
-    st.markdown('### Columns:')
-    st.markdown(" - `order_id`, `buyer_email`, `market`, `child_asin`, `product_marketing_category`, `product_name`, `product_pack`, `product_and_pack`, `product_category`, `product_type`, `product_size`, `product_colour`, `sales`, `units`")
+    st.markdown('### Which data does it have access?')
+    st.markdown(" It has access to the Amazon Orders Data, so you can ask anything that you would normally see on the dashboard, for example specific product categories, asins and so on.")
+
 
     st.markdown('### Financial Metrics:')
     st.markdown(" - Sales, units, basket size/value, No. of orders, No. of customers")
@@ -218,15 +219,18 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             
             # display dataframe
             if not is_error:
-                st.dataframe(pd.DataFrame(query_result_dict))
+                df = pd.DataFrame(query_result_dict)
+                df.to_csv('query_results.csv', index=False)
+                st.dataframe(df, hide_index=True)
+                st.sidebar.markdown(current_dir)
 
         else:
             # st.warning("Our systems couldn't answer your question. Please modify it:", icon="⚠️")
             streamlit_utils.get_status_elements(formatted_reasons)
             st.session_state.display_messages[-1]['content'] += formatted_reasons
             st.markdown(formatted_reasons)
-# with st.sidebar:
-#     st.write(st.session_state.memory_messages_classifier)
+with st.sidebar:
+    st.write(st.session_state.memory_messages_classifier)
 
 if st.session_state.get("run_id"):
     run_id = st.session_state.run_id

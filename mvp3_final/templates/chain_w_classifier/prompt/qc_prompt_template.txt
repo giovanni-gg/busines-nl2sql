@@ -9,7 +9,7 @@ Expected JSON Output 1:
         "date_range": ['last_dates'],
         "financial_metrics": ['sales'],
         "growth_metrics": [],
-        "products": ['Hiking Classic Socks'],
+        "products": ['hiking classic socks'],
         "markets": ['UK'],
     }},
 
@@ -20,7 +20,7 @@ Expected JSON Output 1:
 }}
 
 Example Input 2:
-"How many orders there were last week that included baselayers or male underwear in the french market?"
+"How many orders there were last week that included Baselayer or Male underwear in the french market?"
 
 Expected JSON Output 2:
 {{
@@ -33,27 +33,27 @@ Expected JSON Output 2:
     }},
 
     "not_allowed": {{
-        "financial_metrics": ['conversion_rate'],
+        "financial_metrics": [],
         "growth_metrics": [],
     }}
 }}
 
 Example Input 3:
-"What was the year-over-year and wow of gross sales, units, and ad cost for on the 10th of May 2024?."
+"What was the sales, and units for on the 10th of May 2024? for products of colour red."
 
 Expected JSON Output 3:
 {{
     "allowed": {{
         "date_range": ['specific_dates'],
         "financial_metrics": ['units', 'sales'],
-        "growth_metrics": ['WoW'],
-        "products": ['Baselayer','Male Underwear']
+        "growth_metrics": [],
+        "products": ['red']
         "markets": []
     }},
 
     "not_allowed": {{
-        "financial_metrics": ['ad_cost'],
-        "growth_metrics": ['YoY'],
+        "financial_metrics": [],
+        "growth_metrics": [],
     }}
 }}
 
@@ -78,7 +78,7 @@ Expected JSON Output 4:
 }}
 
 Example Input 5:
-"What was sales by order_id and market last week"
+"What was sales by order id and market last week"
 
 Expected JSON Output 5:
 {{
