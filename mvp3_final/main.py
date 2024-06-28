@@ -222,7 +222,7 @@ if prompt := st.chat_input(placeholder="Message Danish Endurance's Amazon Analys
             # display dataframe
             if not is_error:
                 df = pd.DataFrame(query_result_dict)
-                df.to_csv('query_results.csv', index=False)
+                # df.to_csv('query_results.csv', index=False)
                 st.dataframe(df, hide_index=True)
                 st.sidebar.markdown(current_dir)
 
