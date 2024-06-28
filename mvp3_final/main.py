@@ -131,6 +131,8 @@ memory = lc_memory.ConversationBufferMemory(
 with st.sidebar:
     st.markdown('# DE Data\'s Amazon Sales Specialist Beta')
     st.markdown("Reload page to clear the chat history")
+    url = 'https://waternlife.sharepoint.com/:w:/s/04_DataAnalysis/ESx-H6tOl_JPsXGFdszQeMEBQ4NOSnnhcYH2Tv0rFGOKCQ?e=rqjqtk'
+    st.markdown("[Please, Leave a Feedback](%s)" % url)
     st.divider()
     st.markdown('## The system supports the following metrics:')
 
@@ -236,7 +238,7 @@ if st.session_state.get("run_id"):
     run_id = st.session_state.run_id
     feedback = streamlit_feedback(
         feedback_type=feedback_option,
-        optional_text_label="Leave a comment (optional)",
+        # optional_text_label="Leave a comment (optional)",
         key=f"feedback_{run_id}",
     )
 
