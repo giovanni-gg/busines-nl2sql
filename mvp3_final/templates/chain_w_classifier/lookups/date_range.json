@@ -2,7 +2,7 @@
     "last_dates": {
         "description": "Use this category when the user asks for data from a specific previous period such as the last few days, weeks, months, or years. This includes any request involving a time frame ending before the current period (e.g., last week, last month, last year)",
         "calculation_guidelines": "To calculate previous/last date ranges use the following guidelines:\n- A week is defined from Monday to Sunday, thus use WEEK(MONDAY) when performing DATE_TRUNC().\n- Use the current date (CURRENT_DATE()) as the base date for all calculations.\n- Exclude the ongoing period in your calculations. For example, if asked for the 'last week',  do not include data from the current week. Apply this logic to days, weeks, months, years, and other periods.",
-        "calculation_example": "Example Question: What was the sales last month?\nSQL Query Example:\n```sql\nSELECT \n  sum(gross_sales)\nFROM \n  `danish-endurance-analytics.nl2sql.amazon_orders`\nWHERE \n  purchase_date BETWEEN DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH) \n  AND LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))\n```"
+        "calculation_example": "\nQuestion Example: hat was the sales last weel?\nExample Output:\nSELECT \n  sum(gross_sales)\n  FROM\n    `danish-endurance-analytics.nl2sql.amazon_orders`\nWHERE DATE_TRUNC(purchase_date, WEEK(monday)) IN (\n  DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 1 WEEK), WEEK(monday))\n)"
     },
     "specific_dates": {
         "description": "Use this category when the user specifies exact dates or date ranges in their query. This includes single dates (e.g., 2021-01-01), specific date ranges (e.g., 2021-01-01 to 2021-01-31), or specific periods like years or months",
@@ -10,3 +10,5 @@
         "calculation_example": null
     }
 }
+
+
