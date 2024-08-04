@@ -98,26 +98,7 @@ def analyze_response(response, prompt):
 # set of llm_messages that will be displayed, to the user - hiding prompt engineering. 
 if 'display_messages' not in st.session_state:
     st.session_state.display_messages = []
-    welcome_message = {"role": "assistant", "content": """Welcome! Ask me questions about Danish Endurance's Amazon Orders.
-
-#### How to make yourself understood by the system:
-    
-###### 1. Be Direct and Clear:
-
-- Ask precise and straightforward questions. Avoid vague or ambiguous language.
-- Example: Instead of "How were the sales?" ask "What were the total sales in May 2024?"
-                       
-###### 2. When asking about products, be specific:
-- Use the exact name as listed in the dashboards. For example, it can be a product category, product type or even product names/child ASINs.
-- Instead of "How did the socks perform?" ask "What was the sales of hiking classic socks last week?"
-                       
-###### 3. Specify a Time-Frame:
-- Always specify the time frame you are interested in either relatively (last week) or specifically (Dec 2023).
-
-###### 🟢😎 Here are some examples of well-formated questions:
-- What were the sales for men's polo shirt by product colour last week?
-- How many units were sold of Male Underwear and Baselayer in 2023?
-- What was the asin with the highest sales last week?"""}
+    welcome_message = {"role": "assistant", "content": """Welcome! Ask me questions about Danish Endurance's Amazon Orders."""}
     st.session_state.display_messages.append(welcome_message)
 
 if 'memory_messages_classifier' not in st.session_state:

@@ -7,3 +7,5 @@ Generate SQL query using Google Big Query Syntax only and with no explanation. P
 Question: {input}
 
 Think step by step, be very attentive when interpreting the Dates.
+
+
