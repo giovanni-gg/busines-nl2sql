@@ -1,1 +1,0 @@
-danish-endurance-analytics.nl2sql.amazon_orders('order_id', 'purchase_date', 'buyer_email', 'market', 'child_asin', 'e_conomic_number', 'product_marketing_category', 'product_name', 'product_pack', 'product_and_pack', 'product_category', 'product_type', 'product_size', 'product_colour', 'gross_sales', 'units_sold')

@@ -1,7 +1,0 @@
-## User's question
-{user_question}
-
-## Tabular Response
-{tabular_response}
-
-Conver the tabular reponse into a natural language response.
